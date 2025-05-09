@@ -1,0 +1,44 @@
+/* dashboard.scss */
+
+/* Logo style in sidebar */
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  background-color: #001529;
+  color: #fff;
+}
+
+/* Customize card titles if needed */
+.ant-card-head-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Statistic number */
+.ant-card h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #1890ff;
+}
+
+/* Positive and negative growth */
+.green-text {
+  color: #52c41a;
+}
+
+.red-text {
+  color: #f5222d;
+}
+
+/* Responsive tweak */
+@media (max-width: 768px) {
+  .ant-row {
+    flex-direction: column;
+  }
+
+  .ant-col {
+    width: 100% !important;
+    margin-bottom: 16px;
+  }
+}

@@ -1,0 +1,23 @@
+.certificates-page {
+  padding: 24px;
+
+  .actions-row {
+    margin-bottom: 16px;
+  }
+
+  .certificates-table {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .delete-action {
+    color: red;
+    font-weight: 500;
+
+    &:hover {
+      color: darkred;
+      text-decoration: underline;
+    }
+  }
+}
