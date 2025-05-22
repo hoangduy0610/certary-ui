@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Table, Button, Space, Tag, Row, Col } from 'antd';
-import { FilterOutlined, ExportOutlined, PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import './certificates.scss';
+import { Table, Button, Space, Tag, Row, Col, Avatar, Badge, Input } from 'antd';
+import { FilterOutlined, ExportOutlined, PlusOutlined, CheckCircleOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+import './Certificates.scss';
+import { Header } from 'antd/es/layout/layout';
+import AdminHeader from '../../../components/Admin Header/adminHeader';
 
 interface Certificate {
   key: string;
@@ -130,6 +132,8 @@ const CertificatesPage: React.FC = () => {
 
   return (
     <div className="certificates-page">
+      {/* Header */}
+      <AdminHeader />
       <Row justify="space-between" className="actions-row">
         <Col>
           <Space>

@@ -19,50 +19,17 @@ import {
   DownloadOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import "./dashboard.scss";
+import "./Dashboard.scss";
+import AdminHeader from "../../../components/Admin Header/adminHeader";
 
 const { Header, Sider, Content } = Layout;
 
 export default function Dashboard() {
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      {/* Sidebar
-      <Sider collapsible>
-        <div className="logo" style={{ color: "#fff", padding: "16px" }}>
-          CertManager
-        </div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={["dashboard"]}>
-          <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
-            Dashboard
-          </Menu.Item>
-          <Menu.Item key="certificates" icon={<FileTextOutlined />}>
-            Certificates
-          </Menu.Item>                                                                                              
-          <Menu.Item key="users" icon={<UserOutlined />}>
-            Users
-          </Menu.Item>
-          <Menu.Item key="organizations" icon={<TeamOutlined />}>
-            Organizations
-          </Menu.Item>
-          <Menu.Item key="settings" icon={<SettingOutlined />}>
-            Settings
-          </Menu.Item>
-        </Menu>
-      </Sider> */}
 
-      {/* Main Content */}
       <Layout>
         {/* Header */}
-        <Header style={{ background: "#fff", padding: 0, display: "flex", justifyContent: "space-between", alignItems: "center", paddingInline: 24 }}>
-          <Input.Search placeholder="Search..." style={{ width: 200 }} />
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <Badge count={3}>
-              <BellOutlined style={{ fontSize: 18 }} />
-            </Badge>
-            <Avatar icon={<UserOutlined />} />
-          </div>
-        </Header>
-
+        <AdminHeader />
         {/* Dashboard Content */}
         <Content style={{ margin: "24px 16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -104,6 +71,5 @@ export default function Dashboard() {
           </Row>
         </Content>
       </Layout>
-    </Layout>
   );
 }

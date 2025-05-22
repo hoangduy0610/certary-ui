@@ -1,7 +1,10 @@
 import React from 'react';
-import { Table, Button, Space, Tag, Row, Col } from 'antd';
-import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
-import './users.scss';
+import { Table, Button, Space, Tag, Row, Col, Avatar, Badge, Input } from 'antd';
+import { PlusOutlined, FilterOutlined, ExportOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+import './Users.scss';
+import { Header } from 'antd/es/layout/layout';
+import AdminHeader from '../../../components/Admin Header/adminHeader';
+
 
 interface User {
   key: string;
@@ -12,7 +15,7 @@ interface User {
   status: 'Active' | 'Inactive' | 'Banned';
 }
 
-const data: User[] = [
+const usersData: User[] = [
   {
     key: '1',
     name: 'Alice',
@@ -39,7 +42,7 @@ const data: User[] = [
   },
 ];
 
-const UsersPage: React.FC = () => {
+const Users: React.FC = () => {
   const getStatusColor = (status: User['status']) => {
     switch (status) {
       case 'Active':
@@ -56,10 +59,10 @@ const UsersPage: React.FC = () => {
   const columns = [
     {
       title: '',
-      dataIndex: 'checkbox',
-      key: 'checkbox',
-      render: () => <input type="checkbox" />,
+      dataIndex: 'select',
+      key: 'select',
       width: 50,
+      render: () => <input type="checkbox" />,
     },
     {
       title: 'User',
@@ -103,18 +106,30 @@ const UsersPage: React.FC = () => {
 
   return (
     <div className="users-page">
-      <Row justify="space-between" className="actions-row">
+      {/* Header */}
+      <AdminHeader />
+      <Row justify="space-between" className="users-actions">
         <Col>
           <Space>
             <Button icon={<FilterOutlined />}>Filter</Button>
             <Button icon={<ExportOutlined />}>Export</Button>
           </Space>
         </Col>
+        <Col>
+          <Button type="primary" icon={<PlusOutlined />}>
+            Add User
+          </Button>
+        </Col>
       </Row>
 
-      <Table columns={columns} dataSource={data} className="users-table" />
+      <Table
+        className="users-table"
+        columns={columns}
+        dataSource={usersData}
+        pagination={{ pageSize: 5 }}
+      />
     </div>
   );
 };
 
-export default UsersPage;
+export default Users;

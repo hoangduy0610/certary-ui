@@ -1,23 +1,27 @@
 .users-page {
-  padding: 24px;
+  padding: 16px;
 
-  .actions-row {
+  // Hàng chứa nút hành động
+  .users-actions {
     margin-bottom: 16px;
+    
+    .ant-space {
+      gap: 12px !important;
+    }
+
+    .ant-btn {
+      border-radius: 6px;
+    }
   }
 
+  // Bảng người dùng
   .users-table {
-    background-color: #fff;
-    border-radius: 8px;
+    background: #fff;
     padding: 16px;
-  }
+    border-radius: 8px;
 
-  .delete-action {
-    color: red;
-    font-weight: 500;
-
-    &:hover {
-      color: darkred;
-      text-decoration: underline;
+    .delete-action {
+      color: red;
     }
   }
 }

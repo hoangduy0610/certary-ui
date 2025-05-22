@@ -1,7 +1,9 @@
 import React from 'react';
-import { Table, Button, Space, Tag, Row, Col } from 'antd';
-import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
-import './organizations.scss';
+import { Table, Button, Space, Tag, Row, Col, Avatar, Badge, Input } from 'antd';
+import { PlusOutlined, FilterOutlined, ExportOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+import './Organizations.scss';
+import { Header } from 'antd/es/layout/layout';
+import AdminHeader from '../../../components/Admin Header/adminHeader';
 
 interface Organization {
   key: string;
@@ -103,6 +105,8 @@ const OrganizationsPage: React.FC = () => {
 
   return (
     <div className="organizations-page">
+      {/* Header */}
+      <AdminHeader />
       <Row justify="space-between" className="actions-row">
         <Col>
           <Space>

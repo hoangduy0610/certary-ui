@@ -1,44 +1,22 @@
-/* dashboard.scss */
+.dashboard-page {
+  padding: 16px;
 
-/* Logo style in sidebar */
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  background-color: #001529;
-  color: #fff;
-}
+  // Các thẻ card thông kê
+  .stats-row {
+    margin-top: 16px;
 
-/* Customize card titles if needed */
-.ant-card-head-title {
-  font-size: 16px;
-  font-weight: 600;
-}
+    .ant-card {
+      background: #fff;
+      border-radius: 8px;
 
-/* Statistic number */
-.ant-card h2 {
-  margin: 0;
-  font-size: 28px;
-  color: #1890ff;
-}
+      h2 {
+        margin-bottom: 8px;
+      }
 
-/* Positive and negative growth */
-.green-text {
-  color: #52c41a;
-}
-
-.red-text {
-  color: #f5222d;
-}
-
-/* Responsive tweak */
-@media (max-width: 768px) {
-  .ant-row {
-    flex-direction: column;
-  }
-
-  .ant-col {
-    width: 100% !important;
-    margin-bottom: 16px;
+      p {
+        margin: 0;
+        font-weight: 600;
+      }
+    }
   }
 }

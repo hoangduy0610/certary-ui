@@ -1,23 +1,32 @@
 .organizations-page {
-  padding: 24px;
+  padding: 16px;
 
+  // Hàng chứa nút hành động
   .actions-row {
     margin-bottom: 16px;
+
+    .ant-space {
+      gap: 12px !important;
+    }
+
+    .ant-btn {
+      border-radius: 6px;
+    }
   }
 
+  // Bảng tổ chức
   .organizations-table {
-    background-color: #fff;
-    border-radius: 8px;
+    background: #fff;
     padding: 16px;
-  }
+    border-radius: 8px;
 
-  .delete-action {
-    color: red;
-    font-weight: 500;
+    .delete-action {
+      color: red;
+      cursor: pointer;
 
-    &:hover {
-      color: darkred;
-      text-decoration: underline;
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }

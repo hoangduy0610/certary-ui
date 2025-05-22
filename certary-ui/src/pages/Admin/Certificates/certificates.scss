@@ -1,23 +1,19 @@
 .certificates-page {
-  padding: 24px;
+  padding: 16px;
 
   .actions-row {
     margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+
+    .ant-space {
+      gap: 12px !important; // Giãn cách đều giữa các nút
+    }
   }
 
   .certificates-table {
-    background-color: #fff;
-    border-radius: 8px;
+    background: #fff;
     padding: 16px;
-  }
-
-  .delete-action {
-    color: red;
-    font-weight: 500;
-
-    &:hover {
-      color: darkred;
-      text-decoration: underline;
-    }
+    border-radius: 8px;
   }
 }
