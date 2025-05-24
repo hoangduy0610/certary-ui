@@ -4,6 +4,7 @@ import { FilterOutlined, ExportOutlined, PlusOutlined, CheckCircleOutlined, Bell
 import './Certificates.scss';
 import { Header } from 'antd/es/layout/layout';
 import AdminHeader from '../../../components/Admin Header/adminHeader';
+import { useNavigate } from 'react-router-dom';
 
 interface Certificate {
   key: string;
@@ -51,6 +52,7 @@ const data: Certificate[] = [
 
 const CertificatesPage: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const navigate = useNavigate();
 
   const getStatusColor = (status: Certificate['status']) => {
     switch (status) {
@@ -130,6 +132,15 @@ const CertificatesPage: React.FC = () => {
     },
   };
 
+  const handleVerify = () => {
+    if (selectedRowKeys.length === 1) {
+      const certId = data.find(cert => cert.key === selectedRowKeys[0])?.id;
+      if (certId) {
+        navigate(`/admin/certificates/verify?id=${certId}`);
+      }
+    }
+  };
+
   return (
     <div className="certificates-page">
       {/* Header */}
@@ -143,7 +154,7 @@ const CertificatesPage: React.FC = () => {
         </Col>
         <Col>
           <Space>
-            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0}>
+            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} onClick={handleVerify}>
               Verify
             </Button>
             <Button type="primary" icon={<PlusOutlined />}>

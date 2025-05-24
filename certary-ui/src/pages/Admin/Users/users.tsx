@@ -1,8 +1,7 @@
-import React from 'react';
-import { Table, Button, Space, Tag, Row, Col, Avatar, Badge, Input } from 'antd';
-import { PlusOutlined, FilterOutlined, ExportOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Table, Button, Space, Tag, Row, Col } from 'antd';
+import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
 import './Users.scss';
-import { Header } from 'antd/es/layout/layout';
 import AdminHeader from '../../../components/Admin Header/adminHeader';
 
 
@@ -55,6 +54,7 @@ const Users: React.FC = () => {
         return 'default';
     }
   };
+
 
   const columns = [
     {

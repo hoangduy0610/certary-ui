@@ -11,16 +11,15 @@ const AdminHeader: React.FC = () => {
         background: "#fff",
         padding: "0 24px",
         display: "flex",
-        justifyContent: "space-between",
+        justifyContent: "flex-end", // Chuyển item sang phải
         alignItems: "center",
         height: 64,
         borderBottom: "1px solid #f0f0f0",
         marginBottom: 16,
       }}
     >
-      <Search placeholder="Search..." style={{ width: 200 }} />
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <Badge count={3}>
+        <Badge count={0}>
           <BellOutlined style={{ fontSize: 18 }} />
         </Badge>
         <Avatar icon={<UserOutlined />} />

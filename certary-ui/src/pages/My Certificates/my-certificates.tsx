@@ -1,5 +1,6 @@
 "use client"
 
+import { useNavigate } from "react-router-dom"
 import Footer from "../../components/footer/footer"
 import "./my-certificates.scss"
 import { useState, useMemo } from "react"
@@ -23,6 +24,8 @@ export default function MyCertificates() {
     // Pick a random color pair from our harmonious options
     return baseColors[Math.floor(Math.random() * baseColors.length)]
   }
+
+  const navigate = useNavigate()
 
   const certificates = [
     {
@@ -108,6 +111,9 @@ export default function MyCertificates() {
         <nav className="navigation">
           <a href="/my-certificates" className="navLink active">
             My Certificate
+          </a>
+          <a href="/forum" className="navLink">
+            Forum
           </a>
           <a href="/contact" className="navLink">
             Contact
@@ -224,7 +230,7 @@ export default function MyCertificates() {
                     <span className="status-valid">{cert.status}</span>
                   </div>
                   <div className="certificateActions">
-                    <button className="btnLink">
+                    <button className="btnLink" onClick={() => navigate(`/certificate-details/${cert.id}`)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"

@@ -45,6 +45,9 @@ export default function Home() {
           <a href="/my-certificates" className="navLink">
             My Certificate
           </a>
+          <a href="/forum" className="navLink">
+            Forum
+          </a>
           <a href="/contact" className="navLink">
             Contact
           </a>

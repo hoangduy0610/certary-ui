@@ -16,4 +16,12 @@
     padding: 16px;
     border-radius: 8px;
   }
+  .delete-action {
+    color: red;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }

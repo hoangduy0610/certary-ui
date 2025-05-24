@@ -56,6 +56,9 @@ export default function Contact() {
           <a href="/my-certificates" className="navLink">
             My Certificate
           </a>
+          <a href="/forum" className="navLink">
+            Forum
+          </a>
           <a href="/contact" className="navLink active">
             Contact
           </a>
