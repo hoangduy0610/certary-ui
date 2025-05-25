@@ -15,11 +15,16 @@ import Certificates from '../pages/Admin/Certificates/Certificates';
 import Organizations from '../pages/Admin/Organizations/Organizations';
 import VerifyCertificate from '../pages/Admin/VerifyCertificate/VerifyCertificate';
 import Forum from '../pages/Forum/forum';
+import Login from '../pages/Login/login';
+import Register from '../pages/Register/register';
 
 const AppRoute = () => {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} /> 
+
       <Route path="/" element={<Home />} />
       <Route path="/my-certificates" element={<MyCertificates />} />
       <Route path="/certificate-details/:id" element={<CertificatesDetails />} />
