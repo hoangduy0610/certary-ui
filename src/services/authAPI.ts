@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000" 
+import MainApiRequest from "./MainApiRequest"
 
 interface LoginData {
   email: string
@@ -16,47 +16,46 @@ interface RegisterData {
 export const authAPI = {
   async signin(data: LoginData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+      const response = await MainApiRequest.post(`/auth/signin`, data)
+      if (!response?.data?.token) {
+        throw new Error("Login failed")
       }
-
-      const result = await response.json()
-      return result
-    } catch (error) {
-      console.error("Signin error:", error)
-      throw error
+      return response.data
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `HTTP error! status: ${error.response?.status}`
+      console.error("Signin error:", message)
+      throw new Error(message)
     }
   },
 
   async register(data: RegisterData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      return result
-    } catch (error) {
-      console.error("Register error:", error)
-      throw error
+      const response = await MainApiRequest.post(`/auth/register`, data)
+      return response.data
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `HTTP error! status: ${error.response?.status}`
+      console.error("Register error:", message)
+      throw new Error(message)
     }
   },
+
+  async callback() {
+    try {
+      const response = await MainApiRequest.get(`/auth/callback`)
+      return response.data
+    } catch (error: any) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `HTTP error! status: ${error.response?.status}`
+      console.error("Callback error:", message)
+      throw new Error(message)
+    }
+  }
 }

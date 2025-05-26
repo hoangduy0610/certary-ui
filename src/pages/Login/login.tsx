@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import "./login.scss"
 import { authAPI } from "../../services/authAPI"
 import { StorageKeys } from "../../common/StorageKeys"
+import { Button, Form } from "antd"
 
 interface LoginFormData {
   email: string
@@ -33,6 +34,7 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     setLoading(true)
     setError("")
 
@@ -53,7 +55,7 @@ const LoginForm: React.FC = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <form className="login-form" onSubmit={handleSubmit}>
+        <Form className="login-form">
           <div className="form-header">
             <h1>Đăng nhập</h1>
             <p>Chào mừng bạn quay trở lại</p>
@@ -98,7 +100,7 @@ const LoginForm: React.FC = () => {
             </a>
           </div>
 
-          <button type="submit" className="submit-button" disabled={loading}>
+          <button type="button" onClick={handleSubmit} className="submit-button" disabled={loading}>
             {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
 
@@ -110,7 +112,7 @@ const LoginForm: React.FC = () => {
               </a>
             </p>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   )

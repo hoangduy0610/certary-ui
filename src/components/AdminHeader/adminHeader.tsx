@@ -1,10 +1,23 @@
-import React from "react";
-import { Input, Badge, Avatar } from "antd";
 import { BellOutlined, UserOutlined } from "@ant-design/icons";
+import { Avatar, Badge, Dropdown, Input } from "antd";
+import React from "react";
+import { logout } from "../../utils/auth";
 
 const { Search } = Input;
 
 const AdminHeader: React.FC = () => {
+  const menu = {
+    items: [
+      {
+        key: "10",
+        label: <span style={{ fontSize: 14 }}>Logout</span>,
+        onClick: () => {
+          logout();
+        }
+      }
+    ]
+  }
+
   return (
     <div
       style={{
@@ -22,7 +35,12 @@ const AdminHeader: React.FC = () => {
         <Badge count={0}>
           <BellOutlined style={{ fontSize: 18 }} />
         </Badge>
-        <Avatar icon={<UserOutlined />} />
+
+        <Dropdown menu={menu} trigger={['click']}>
+          <span style={{ cursor: "pointer" }}>
+            <Avatar icon={<UserOutlined />} />
+          </span>
+        </Dropdown>
       </div>
     </div>
   );
