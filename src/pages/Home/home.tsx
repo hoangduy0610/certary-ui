@@ -7,7 +7,7 @@ import "./home.scss"
 import homeImage1 from "../../components/images/homeImage1.png"
 import homeImage2 from "../../components/images/homeImage2.jpg"
 import homeImage3 from "../../components/images/homeImage3.jpg"
-import Footer from "../../components/footer/footer"
+import Footer from "../../components/Footer/footer"
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)

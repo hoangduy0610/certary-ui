@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Table, Button, Space, Tag, Row, Col } from 'antd';
 import { PlusOutlined, FilterOutlined, ExportOutlined } from '@ant-design/icons';
 import './Users.scss';
-import AdminHeader from '../../../components/Admin Header/adminHeader';
+import AdminHeader from '../../../components/AdminHeader/adminHeader';
 
 
 interface User {

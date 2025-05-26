@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import "./contact.scss"
-import Footer from "../../components/footer/footer"
+import Footer from "../../components/Footer/footer"
 
 export default function Contact() {
   const [formData, setFormData] = useState({

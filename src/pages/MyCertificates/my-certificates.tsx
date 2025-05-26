@@ -1,7 +1,7 @@
 "use client"
 
 import { useNavigate } from "react-router-dom"
-import Footer from "../../components/footer/footer"
+import Footer from "../../components/Footer/footer"
 import "./my-certificates.scss"
 import { useState, useMemo } from "react"
 

@@ -1,8 +1,10 @@
-const API_BASE_URL = "https://certaryapi.evovou.store"
+import { StorageKeys } from "../common/StorageKeys"
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000"
 
 // Helper function để lấy token từ localStorage
 const getAuthToken = () => {
-  return localStorage.getItem("token")
+  return localStorage.getItem(StorageKeys.AUTH_TOKEN) || ""
 }
 
 // Helper function để tạo headers với authorization
@@ -19,7 +21,7 @@ export interface Organization {
   id: string
   name: string
   type: string
-  status: "Active" | "Pending" | "Suspended"
+  status: "active" | "pending" | "suspended"
   adminEmail?: string
   description?: string
   walletAddress?: string
@@ -67,7 +69,7 @@ export const organizationsAPI = {
    * Lấy tất cả organizations
    * GET /organizations
    */
-  async getAll(): Promise<OrganizationsResponse> {
+  async getAll(): Promise<Organization[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/organizations`, {
         method: "GET",

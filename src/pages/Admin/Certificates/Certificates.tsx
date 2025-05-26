@@ -3,7 +3,7 @@ import { Table, Button, Space, Tag, Row, Col, Avatar, Badge, Input } from 'antd'
 import { FilterOutlined, ExportOutlined, PlusOutlined, CheckCircleOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
 import './Certificates.scss';
 import { Header } from 'antd/es/layout/layout';
-import AdminHeader from '../../../components/Admin Header/adminHeader';
+import AdminHeader from '../../../components/AdminHeader/adminHeader';
 import { useNavigate } from 'react-router-dom';
 
 interface Certificate {

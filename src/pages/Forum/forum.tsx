@@ -1,8 +1,8 @@
 import type React from "react"
 import { useState } from "react"
 import "./forum.scss"
-import TopicDetail from "../Forum Detail/forum-detail"
-import Footer from "../../components/footer/footer"
+import TopicDetail from "../ForumDetail/forum-detail"
+import Footer from "../../components/Footer/footer"
 
 interface Topic {
     id: number

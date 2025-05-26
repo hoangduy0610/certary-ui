@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 
 import "./login.scss"
 import { authAPI } from "../../services/authAPI"
+import { StorageKeys } from "../../common/StorageKeys"
 
 interface LoginFormData {
   email: string
@@ -37,6 +38,8 @@ const LoginForm: React.FC = () => {
 
     try {
       const response = await authAPI.signin(formData)
+      localStorage.setItem(StorageKeys.AUTH_TOKEN, response.token || "")
+      localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(response.info || {}))
       console.log("Đăng nhập thành công:", response)
       // Chuyển hướng về trang chủ
       navigate("/")

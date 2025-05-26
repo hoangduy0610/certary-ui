@@ -20,7 +20,7 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import "./Dashboard.scss";
-import AdminHeader from "../../../components/Admin Header/adminHeader";
+import AdminHeader from "../../../components/AdminHeader/adminHeader";
 
 const { Header, Sider, Content } = Layout;
 

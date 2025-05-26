@@ -1,11 +1,12 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Table, Button, Space, Tag, Row, Col, Input, Modal, Form, message, Spin, Select } from "antd"
+import { Table, Button, Space, Tag, Row, Col, Input, Modal, Form, message as AntdMessage, Spin, Select } from "antd"
 import { PlusOutlined, FilterOutlined, ExportOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
 import "./Organizations.scss"
 import { Organization, organizationsAPI } from "../../../services/organizationsAPI"
 
 const OrganizationsPage: React.FC = () => {
+  const [message, contextHolder] = AntdMessage.useMessage();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [searchText, setSearchText] = useState("")
   const [data, setData] = useState<Organization[]>([])
@@ -25,7 +26,7 @@ const OrganizationsPage: React.FC = () => {
     try {
       const response = await organizationsAPI.getAll()
       // Giả sử API trả về object có property data
-      const organizations = response.data || []
+      const organizations = response || []
       setData(organizations)
     } catch (error: any) {
       message.error(error.message || "Không thể tải danh sách organizations")
@@ -36,11 +37,11 @@ const OrganizationsPage: React.FC = () => {
 
   const getStatusColor = (status: Organization["status"]) => {
     switch (status) {
-      case "Active":
+      case "active":
         return "green"
-      case "Pending":
+      case "pending":
         return "orange"
-      case "Suspended":
+      case "suspended":
         return "red"
       default:
         return "default"
@@ -160,10 +161,12 @@ const OrganizationsPage: React.FC = () => {
 
   // Lọc dữ liệu theo searchText
   const filteredData = data.filter(
-    (org) =>
+    (org) => !searchText ||
       org.name.toLowerCase().includes(searchText.toLowerCase()) ||
       org.type.toLowerCase().includes(searchText.toLowerCase()),
   )
+
+  console.log("Filtered Data:", filteredData)
 
   const columns = [
     {
@@ -201,11 +204,6 @@ const OrganizationsPage: React.FC = () => {
         ),
     },
     {
-      title: "Admin Email",
-      dataIndex: "adminEmail",
-      key: "adminEmail",
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -221,153 +219,156 @@ const OrganizationsPage: React.FC = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: Organization) => (
-        <Space size="middle">
-          <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
-            Edit
+        <div className="">
+          <Button variant="outlined" color="primary" onClick={() => handleEdit(record)}>
+            <EditOutlined />
           </Button>
-          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record)}>
-            Delete
+          <Button variant="outlined" className="ms-2" danger onClick={() => handleDelete(record)}>
+            <DeleteOutlined />
           </Button>
-        </Space>
+        </div>
       ),
     },
   ]
 
   return (
-    <div className="organizations-page">
-      <div className="page-header">
-        <h1>Organizations Management</h1>
-      </div>
+    <>
+      {contextHolder}
+      <div className="organizations-page">
+        <div className="page-header">
+          <h1>Organizations Management</h1>
+        </div>
 
-      <Row justify="space-between" className="actions-row" style={{ marginBottom: 16 }}>
+        <Row justify="space-between" className="actions-row" style={{ marginBottom: 16 }}>
 
-        <Col>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
-            Add Organization
-          </Button>
-        </Col>
-      </Row>
+          <Col>
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
+              Add Organization
+            </Button>
+          </Col>
+        </Row>
 
-      <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-        <Col>
-          <Input.Search
-            placeholder="Search organizations..."
-            onChange={(e) => setSearchText(e.target.value)}
-            allowClear
-            style={{ width: 300 }}
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+          <Col>
+            <Input
+              placeholder="Search organizations..."
+              onChange={(e) => setSearchText(e.target.value)}
+              allowClear
+              style={{ width: 300 }}
+            />
+          </Col>
+
+          <Col>
+            {selectedRowKeys.length > 0 && (
+              <Space>
+                <Button type="primary" onClick={handleActivate} loading={loading}>
+                  Activate ({selectedRowKeys.length})
+                </Button>
+                <Button danger onClick={handleSuspend} loading={loading}>
+                  Suspend ({selectedRowKeys.length})
+                </Button>
+              </Space>
+            )}
+          </Col>
+        </Row>
+
+        <Spin spinning={loading}>
+          <Table
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={filteredData}
+            className="organizations-table"
+            rowKey="id"
+            pagination={{
+              total: filteredData.length,
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} organizations`,
+            }}
           />
-        </Col>
+        </Spin>
 
-        <Col>
-          {selectedRowKeys.length > 0 && (
-            <Space>
-              <Button type="primary" onClick={handleActivate} loading={loading}>
-                Activate ({selectedRowKeys.length})
-              </Button>
-              <Button danger onClick={handleSuspend} loading={loading}>
-                Suspend ({selectedRowKeys.length})
-              </Button>
-            </Space>
-          )}
-        </Col>
-      </Row>
+        {/* Modal form thêm/sửa Organization */}
+        <Modal
+          title={isEditMode ? "Edit Organization" : "Add New Organization"}
+          open={isModalVisible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText={isEditMode ? "Update" : "Create"}
+          confirmLoading={loading}
+          width={600}
+        >
+          <Form form={form} layout="vertical" name="organization_form">
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[{ required: true, message: "Please input the organization name!" }]}
+                >
+                  <Input placeholder="Organization name" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label="Type"
+                  name="type"
+                  rules={[{ required: true, message: "Please select organization type!" }]}
+                >
+                  <Select placeholder="Select organization type">
+                    <Select.Option value="issuer">Issuer</Select.Option>
+                    <Select.Option value="verifier">Verifier</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
 
-      <Spin spinning={loading}>
-        <Table
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={filteredData}
-          className="organizations-table"
-          rowKey="id"
-          pagination={{
-            total: filteredData.length,
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} organizations`,
-          }}
-        />
-      </Spin>
-
-      {/* Modal form thêm/sửa Organization */}
-      <Modal
-        title={isEditMode ? "Edit Organization" : "Add New Organization"}
-        open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText={isEditMode ? "Update" : "Create"}
-        confirmLoading={loading}
-        width={600}
-      >
-        <Form form={form} layout="vertical" name="organization_form">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Name"
-                name="name"
-                rules={[{ required: true, message: "Please input the organization name!" }]}
-              >
-                <Input placeholder="Organization name" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Type"
-                name="type"
-                rules={[{ required: true, message: "Please select organization type!" }]}
-              >
-                <Select placeholder="Select organization type">
-                  <Select.Option value="Isuer">Isuer</Select.Option>
-                  <Select.Option value="Verifier">Verifier</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label="Admin Email"
-            name="adminEmail"
-            rules={[
-              { required: true, message: "Please input admin email!" },
-              { type: "email", message: "Please enter a valid email!" },
-            ]}
-          >
-            <Input placeholder="admin@organization.com" />
-          </Form.Item>
-
-          {!isEditMode && (
             <Form.Item
-              label="Admin Password"
-              name="adminPassword"
-              rules={[{ required: true, message: "Please input admin password!" }]}
+              label="Admin Email"
+              name="adminEmail"
+              rules={[
+                { required: true, message: "Please input admin email!" },
+                { type: "email", message: "Please enter a valid email!" },
+              ]}
             >
-              <Input.Password placeholder="Admin password" />
+              <Input placeholder="admin@organization.com" />
             </Form.Item>
-          )}
 
-          <Form.Item label="Description" name="description">
-            <Input.TextArea rows={3} placeholder="Organization description" />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Website" name="website">
-                <Input placeholder="https://organization.com" />
+            {!isEditMode && (
+              <Form.Item
+                label="Admin Password"
+                name="adminPassword"
+                rules={[{ required: true, message: "Please input admin password!" }]}
+              >
+                <Input.Password placeholder="Admin password" />
               </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Logo URL" name="logo">
-                <Input placeholder="https://logo-url.com/logo.png" />
-              </Form.Item>
-            </Col>
-          </Row>
+            )}
 
-          <Form.Item label="Wallet Address" name="walletAddress">
-            <Input placeholder="0x1234..." />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </div>
+            <Form.Item label="Description" name="description">
+              <Input.TextArea rows={3} placeholder="Organization description" />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item label="Website" name="website">
+                  <Input placeholder="https://organization.com" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Logo URL" name="logo">
+                  <Input placeholder="https://logo-url.com/logo.png" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item label="Wallet Address" name="walletAddress">
+              <Input placeholder="0x1234..." />
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    </>
   )
 }
 

@@ -3,9 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 
 // Public Pages
 import Home from '../pages/Home/home';
-import MyCertificates from '../pages/My Certificates/my-certificates';
+import MyCertificates from '../pages/MyCertificates/my-certificates';
 import Contact from '../pages/Contact/contact';
-import CertificatesDetails from '../pages/Certificate Details/certificate-details';
+import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
 
 // Admin Pages
 import AdminLayout from '../pages/Admin/AdminLayout';
