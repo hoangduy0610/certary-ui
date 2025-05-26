@@ -1,9 +1,10 @@
+import { DeleteOutlined, EditOutlined, ExportOutlined, FilterOutlined, PlusOutlined } from "@ant-design/icons"
+import { message as AntdMessage, Button, Col, Form, Input, Modal, Row, Select, Space, Spin, Table, Tag } from "antd"
 import type React from "react"
-import { useState, useEffect } from "react"
-import { Table, Button, Space, Tag, Row, Col, Input, Modal, Form, message as AntdMessage, Spin, Select } from "antd"
-import { PlusOutlined, FilterOutlined, ExportOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
-import "./Organizations.scss"
+import { useEffect, useState } from "react"
+import AdminHeader from "../../../components/AdminHeader/adminHeader"
 import { Organization, organizationsAPI } from "../../../services/organizationsAPI"
+import "./Organizations.scss"
 
 const OrganizationsPage: React.FC = () => {
   const [message, contextHolder] = AntdMessage.useMessage();
@@ -149,9 +150,9 @@ const OrganizationsPage: React.FC = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          await organizationsAPI.delete(org.id)
-          message.success("Xóa organization thành công")
-          await fetchOrganizations()
+          // await organizationsAPI.delete(org.id)
+          // message.success("Xóa organization thành công")
+          // await fetchOrganizations()
         } catch (error: any) {
           message.error(error.message || "Không thể xóa organization")
         }
@@ -180,9 +181,15 @@ const OrganizationsPage: React.FC = () => {
       dataIndex: "type",
       key: "type",
       filters: [
-        { text: "", value: "" },
+        { text: "issuer", value: "Issuer" },
+        { text: "verifier", value: "Verifier" },
       ],
       onFilter: (value: any, record: Organization) => record.type === value,
+      render: (type: Organization["type"]) => (
+        <Tag color={type === "issuer" ? "blue" : "green"}>
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </Tag>
+      ),
     },
     {
       title: "Description",
@@ -209,9 +216,9 @@ const OrganizationsPage: React.FC = () => {
       key: "status",
       render: (status: Organization["status"]) => <Tag color={getStatusColor(status)}>{status}</Tag>,
       filters: [
-        { text: "Active", value: "Active" },
-        { text: "Pending", value: "Pending" },
-        { text: "Suspended", value: "Suspended" },
+        { text: "Active", value: "active" },
+        { text: "Pending", value: "pending" },
+        { text: "Suspended", value: "suspended" },
       ],
       onFilter: (value: any, record: Organization) => record.status === value,
     },
@@ -235,20 +242,21 @@ const OrganizationsPage: React.FC = () => {
     <>
       {contextHolder}
       <div className="organizations-page">
-        <div className="page-header">
-          <h1>Organizations Management</h1>
-        </div>
-
-        <Row justify="space-between" className="actions-row" style={{ marginBottom: 16 }}>
-
+        <AdminHeader />
+        <Row justify="space-between" className="users-actions">
+          <Col>
+            <Space>
+              <Button icon={<FilterOutlined />}>Filter</Button>
+              <Button icon={<ExportOutlined />}>Export</Button>
+            </Space>
+          </Col>
           <Col>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
               Add Organization
             </Button>
           </Col>
         </Row>
-
-        <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+        <Row justify="space-between" align="middle" style={{ marginBottom: 16, marginTop: 16 }}>
           <Col>
             <Input
               placeholder="Search organizations..."
