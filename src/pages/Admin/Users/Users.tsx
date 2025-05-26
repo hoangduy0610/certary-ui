@@ -108,26 +108,28 @@ const Users: React.FC = () => {
     <div className="users-page">
       {/* Header */}
       <AdminHeader />
-      <Row justify="space-between" className="users-actions">
-        <Col>
-          <Space>
-            <Button icon={<FilterOutlined />}>Filter</Button>
-            <Button icon={<ExportOutlined />}>Export</Button>
-          </Space>
-        </Col>
-        <Col>
-          <Button type="primary" icon={<PlusOutlined />}>
-            Add User
-          </Button>
-        </Col>
-      </Row>
+      <div className="admin-wrapper">
+        <Row justify="space-between" className="users-actions">
+          <Col>
+            <Space>
+              <Button icon={<FilterOutlined />}>Filter</Button>
+              <Button icon={<ExportOutlined />}>Export</Button>
+            </Space>
+          </Col>
+          <Col>
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add User
+            </Button>
+          </Col>
+        </Row>
 
-      <Table
-        className="users-table"
-        columns={columns}
-        dataSource={usersData}
-        pagination={{ pageSize: 5 }}
-      />
+        <Table
+          className="users-table"
+          columns={columns}
+          dataSource={usersData}
+          pagination={{ pageSize: 5 }}
+        />
+      </div>
     </div>
   );
 };

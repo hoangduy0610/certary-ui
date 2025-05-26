@@ -8,7 +8,7 @@ import Contact from '../pages/Contact/contact';
 import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
 
 // Admin Pages
-import AdminLayout from '../pages/Admin/AdminLayout';
+import AdminLayout from '../pages/Admin/Layout/AdminLayout';
 import Dashboard from '../pages/Admin/Dashboard/Dashboard';
 import Users from '../pages/Admin/Users/Users';
 import Certificates from '../pages/Admin/Certificates/Certificates';

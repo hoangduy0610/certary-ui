@@ -7,6 +7,7 @@ import {
   ApartmentOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import "./AdminLayout.scss";
 
 const { Sider, Content } = Layout;
 
@@ -37,7 +38,7 @@ const AdminLayout: React.FC = () => {
         </Menu>
       </Sider>
       <Layout>
-        <Content style={{ margin: '16px' }}>
+        <Content style={{ margin: 0 }}>
           <Outlet />
         </Content>
       </Layout>

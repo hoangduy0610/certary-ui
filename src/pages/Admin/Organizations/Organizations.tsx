@@ -243,138 +243,140 @@ const OrganizationsPage: React.FC = () => {
       {contextHolder}
       <div className="organizations-page">
         <AdminHeader />
-        <Row justify="space-between" className="users-actions">
-          <Col>
-            <Space>
-              <Button icon={<FilterOutlined />}>Filter</Button>
-              <Button icon={<ExportOutlined />}>Export</Button>
-            </Space>
-          </Col>
-          <Col>
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
-              Add Organization
-            </Button>
-          </Col>
-        </Row>
-        <Row justify="space-between" align="middle" style={{ marginBottom: 16, marginTop: 16 }}>
-          <Col>
-            <Input
-              placeholder="Search organizations..."
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-              style={{ width: 300 }}
-            />
-          </Col>
-
-          <Col>
-            {selectedRowKeys.length > 0 && (
+        <div className="admin-wrapper">
+          <Row justify="space-between" className="users-actions">
+            <Col>
               <Space>
-                <Button type="primary" onClick={handleActivate} loading={loading}>
-                  Activate ({selectedRowKeys.length})
-                </Button>
-                <Button danger onClick={handleSuspend} loading={loading}>
-                  Suspend ({selectedRowKeys.length})
-                </Button>
+                <Button icon={<FilterOutlined />}>Filter</Button>
+                <Button icon={<ExportOutlined />}>Export</Button>
               </Space>
-            )}
-          </Col>
-        </Row>
+            </Col>
+            <Col>
+              <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal()}>
+                Add Organization
+              </Button>
+            </Col>
+          </Row>
+          <Row justify="space-between" align="middle" style={{ marginBottom: 16, marginTop: 16 }}>
+            <Col>
+              <Input
+                placeholder="Search organizations..."
+                onChange={(e) => setSearchText(e.target.value)}
+                allowClear
+                style={{ width: 300 }}
+              />
+            </Col>
 
-        <Spin spinning={loading}>
-          <Table
-            rowSelection={rowSelection}
-            columns={columns}
-            dataSource={filteredData}
-            className="organizations-table"
-            rowKey="id"
-            pagination={{
-              total: filteredData.length,
-              pageSize: 10,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} organizations`,
-            }}
-          />
-        </Spin>
+            <Col>
+              {selectedRowKeys.length > 0 && (
+                <Space>
+                  <Button type="primary" onClick={handleActivate} loading={loading}>
+                    Activate ({selectedRowKeys.length})
+                  </Button>
+                  <Button danger onClick={handleSuspend} loading={loading}>
+                    Suspend ({selectedRowKeys.length})
+                  </Button>
+                </Space>
+              )}
+            </Col>
+          </Row>
 
-        {/* Modal form thêm/sửa Organization */}
-        <Modal
-          title={isEditMode ? "Edit Organization" : "Add New Organization"}
-          open={isModalVisible}
-          onOk={handleOk}
-          onCancel={handleCancel}
-          okText={isEditMode ? "Update" : "Create"}
-          confirmLoading={loading}
-          width={600}
-        >
-          <Form form={form} layout="vertical" name="organization_form">
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="Name"
-                  name="name"
-                  rules={[{ required: true, message: "Please input the organization name!" }]}
-                >
-                  <Input placeholder="Organization name" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  label="Type"
-                  name="type"
-                  rules={[{ required: true, message: "Please select organization type!" }]}
-                >
-                  <Select placeholder="Select organization type">
-                    <Select.Option value="issuer">Issuer</Select.Option>
-                    <Select.Option value="verifier">Verifier</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
+          <Spin spinning={loading}>
+            <Table
+              rowSelection={rowSelection}
+              columns={columns}
+              dataSource={filteredData}
+              className="organizations-table"
+              rowKey="id"
+              pagination={{
+                total: filteredData.length,
+                pageSize: 10,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} organizations`,
+              }}
+            />
+          </Spin>
 
-            <Form.Item
-              label="Admin Email"
-              name="adminEmail"
-              rules={[
-                { required: true, message: "Please input admin email!" },
-                { type: "email", message: "Please enter a valid email!" },
-              ]}
-            >
-              <Input placeholder="admin@organization.com" />
-            </Form.Item>
+          {/* Modal form thêm/sửa Organization */}
+          <Modal
+            title={isEditMode ? "Edit Organization" : "Add New Organization"}
+            open={isModalVisible}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText={isEditMode ? "Update" : "Create"}
+            confirmLoading={loading}
+            width={600}
+          >
+            <Form form={form} layout="vertical" name="organization_form">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Name"
+                    name="name"
+                    rules={[{ required: true, message: "Please input the organization name!" }]}
+                  >
+                    <Input placeholder="Organization name" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Type"
+                    name="type"
+                    rules={[{ required: true, message: "Please select organization type!" }]}
+                  >
+                    <Select placeholder="Select organization type">
+                      <Select.Option value="issuer">Issuer</Select.Option>
+                      <Select.Option value="verifier">Verifier</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
 
-            {!isEditMode && (
               <Form.Item
-                label="Admin Password"
-                name="adminPassword"
-                rules={[{ required: true, message: "Please input admin password!" }]}
+                label="Admin Email"
+                name="adminEmail"
+                rules={[
+                  { required: true, message: "Please input admin email!" },
+                  { type: "email", message: "Please enter a valid email!" },
+                ]}
               >
-                <Input.Password placeholder="Admin password" />
+                <Input placeholder="admin@organization.com" />
               </Form.Item>
-            )}
 
-            <Form.Item label="Description" name="description">
-              <Input.TextArea rows={3} placeholder="Organization description" />
-            </Form.Item>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item label="Website" name="website">
-                  <Input placeholder="https://organization.com" />
+              {!isEditMode && (
+                <Form.Item
+                  label="Admin Password"
+                  name="adminPassword"
+                  rules={[{ required: true, message: "Please input admin password!" }]}
+                >
+                  <Input.Password placeholder="Admin password" />
                 </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="Logo URL" name="logo">
-                  <Input placeholder="https://logo-url.com/logo.png" />
-                </Form.Item>
-              </Col>
-            </Row>
+              )}
 
-            <Form.Item label="Wallet Address" name="walletAddress">
-              <Input placeholder="0x1234..." />
-            </Form.Item>
-          </Form>
-        </Modal>
+              <Form.Item label="Description" name="description">
+                <Input.TextArea rows={3} placeholder="Organization description" />
+              </Form.Item>
+
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="Website" name="website">
+                    <Input placeholder="https://organization.com" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Logo URL" name="logo">
+                    <Input placeholder="https://logo-url.com/logo.png" />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item label="Wallet Address" name="walletAddress">
+                <Input placeholder="0x1234..." />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
       </div>
     </>
   )

@@ -145,31 +145,32 @@ const CertificatesPage: React.FC = () => {
     <div className="certificates-page">
       {/* Header */}
       <AdminHeader />
-      <Row justify="space-between" className="actions-row">
-        <Col>
-          <Space>
-            <Button icon={<FilterOutlined />}>Filter</Button>
-            <Button icon={<ExportOutlined />}>Export</Button>
-          </Space>
-        </Col>
-        <Col>
-          <Space>
-            <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} onClick={handleVerify}>
-              Verify
-            </Button>
-            <Button type="primary" icon={<PlusOutlined />}>
-              Add Certificate
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-
-      <Table
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={data}
-        className="certificates-table"
-      />
+      <div className="admin-wrapper">
+        <Row justify="space-between" className="actions-row">
+          <Col>
+            <Space>
+              <Button icon={<FilterOutlined />}>Filter</Button>
+              <Button icon={<ExportOutlined />}>Export</Button>
+            </Space>
+          </Col>
+          <Col>
+            <Space>
+              <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} onClick={handleVerify}>
+                Verify
+              </Button>
+              <Button type="primary" icon={<PlusOutlined />}>
+                Add Certificate
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+        <Table
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={data}
+          className="certificates-table"
+        />
+      </div>
     </div>
   );
 };
