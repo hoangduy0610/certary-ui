@@ -255,7 +255,7 @@ export default function Home() {
           <h2>Start Managing Your Certificates Today</h2>
           <p>Join thousands of organizations using our platform for efficient certificate management</p>
           <div className="ctaButtons">
-            <a href="/signup" className="btn btn-primary">
+            <a href="/register" className="btn btn-primary">
               Sign Up Free
             </a>
             <a href="/contact" className="btn btn-secondary">
