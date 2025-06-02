@@ -6,6 +6,7 @@ import Footer from "../../components/Footer/footer"
 import { Certificate, CertificateAPI } from "../../services/certificateAPI"
 import "./my-certificates.scss"
 import moment from "moment"
+import { Header } from "../../components/Header/Header"
 
 export default function MyCertificates() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -79,26 +80,7 @@ export default function MyCertificates() {
 
   return (
     <div className="certificatesPage">
-
-      <header className="header">
-        <a href="/" className="logo" style={{ textDecoration: "none" }}>
-          Certary
-        </a>
-        <nav className="navigation">
-          <a href="/my-certificates" className="navLink active">
-            My Certificate
-          </a>
-          <a href="/forum" className="navLink">
-            Forum
-          </a>
-          <a href="/contact" className="navLink">
-            Contact
-          </a>
-          <a href="/login" className="navLink">
-            Login
-          </a>
-        </nav>
-      </header>
+      <Header active="my-certificates" />
 
       <div className="certificatesHero">
         <div className="certificatesHeroContent">

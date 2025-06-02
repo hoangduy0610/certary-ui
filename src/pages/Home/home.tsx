@@ -8,6 +8,7 @@ import homeImage1 from "../../components/images/homeImage1.png"
 import homeImage2 from "../../components/images/homeImage2.jpg"
 import homeImage3 from "../../components/images/homeImage3.jpg"
 import Footer from "../../components/Footer/footer"
+import { Header } from "../../components/Header/Header"
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -37,25 +38,7 @@ export default function Home() {
 
   return (
     <div className="homePage">
-      <header className="header">
-        <a href="/" className="logo" style={{ textDecoration: "none" }}>
-          Certary
-        </a>
-        <nav className="navigation">
-          <a href="/my-certificates" className="navLink">
-            My Certificate
-          </a>
-          <a href="/forum" className="navLink">
-            Forum
-          </a>
-          <a href="/contact" className="navLink">
-            Contact
-          </a>
-          <a href="/login" className="navLink">
-            Login
-          </a>
-        </nav>
-      </header>
+      <Header active="home" />
 
       <section className="heroSection">
         <div className="heroBackground">

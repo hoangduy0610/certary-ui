@@ -1,14 +1,15 @@
 // src/pages/admin/AdminLayout.tsx
-import { Layout, Menu } from 'antd';
 import {
-  DashboardOutlined,
-  UserOutlined,
-  IdcardOutlined,
   ApartmentOutlined,
+  DashboardOutlined,
+  IdcardOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import "./AdminLayout.scss";
 import { useUserInfo } from '../../../hooks/useUserInfo';
+import "./AdminLayout.scss";
 
 const { Sider, Content } = Layout;
 
@@ -16,10 +17,15 @@ const AdminLayout: React.FC = () => {
   const location = useLocation();
   const selectedKey = location.pathname.split('/')[2] || 'dashboard';
   const { userInfo } = useUserInfo();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible>
+      <Sider collapsible onCollapse={(collapsed) => setCollapsed(collapsed)}>
+        <div className="d-flex align-items-center my-2 justify-content-center logo-container">
+          {!collapsed && <h2 className="text-white">Certary</h2>}
+          {collapsed && <h2 className="text-white">C</h2>}
+        </div>
         <Menu
           theme="dark"
           mode="inline"
