@@ -1,5 +1,7 @@
 // src/api/CertificateApis.ts
 import MainApiRequest from "./MainApiRequest"
+import { Organization } from "./organizationsAPI"
+import { User } from "./userAPI"
 
 export interface Certificate {
     id: number
@@ -10,6 +12,11 @@ export interface Certificate {
     status: 'draft' | 'waiting_for_id' | 'issued' | 'claimed' | 'revoked'
     createdAt: Date
     updatedAt: Date
+    issuer?: Organization
+    owner?: User
+    certificateId?: string
+    tokenId?: string
+    expiredAt?: Date
 }
 
 export interface CreateCertificateDto {
@@ -89,7 +96,7 @@ export const CertificateAPI = {
         }
     },
 
-    async verify(certificateId: string): Promise<Certificate> {
+    async verify(certificateId: string): Promise<{ valid: boolean, certificate: Certificate }> {
         try {
             const response = await MainApiRequest.get(`/certificates/verify/${certificateId}`)
             return response.data

@@ -1,52 +1,62 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import moment from "moment"
+import { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { Certificate, CertificateAPI } from "../../services/certificateAPI"
 import "./certificate-details.scss"
-
-interface Certificate {
-  id: number
-  title: string
-  issuedBy: string
-  issueDate: string
-  expiryDate: string
-  status: string
-  category: string
-  description?: string
-  credentialId?: string
-  skills?: string[]
-  verificationUrl?: string
-}
+import { Tag } from "antd"
 
 interface CertificateDetailProps {
-  certificate?: Certificate
   onClose?: () => void
 }
 
-export default function CertificateDetail({ certificate, onClose }: CertificateDetailProps) {
+export default function CertificateDetail({ onClose }: CertificateDetailProps) {
+  const { id: certificateId } = useParams();
   const [activeTab, setActiveTab] = useState("overview")
+  const [cert, setCert] = useState<Certificate>();
   const navigate = useNavigate()
+
+  const fetchCertificate = async (id: string) => {
+    try {
+      if (!id) {
+        console.error("Certificate ID is required")
+        return
+      }
+      // Fetch certificate details by ID
+      const intId = parseInt(id)
+      const data = await CertificateAPI.getById(intId)
+      setCert(data)
+    } catch (error) {
+      console.error("Error fetching certificate:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchCertificate(certificateId || "")
+  }, [])
 
   const handleClose = () => {
     navigate("/my-certificates")
     onClose?.()
   }
 
-  // Sample certificate data - replace with actual data
-  const defaultCertificate: Certificate = {
-    id: 1,
-    title: "Project Management Certificate",
-    issuedBy: "Management Academy",
-    issueDate: "15/03/2023",
-    expiryDate: "15/03/2025",
-    status: "Valid",
-    category: "Management",
-    description:
-      "This comprehensive project management certification covers essential methodologies, tools, and best practices for successful project delivery. The program includes training in Agile, Scrum, risk management, and stakeholder communication.",
-    credentialId: "PM-2023-001234",
-    skills: ["Project Planning", "Risk Management", "Agile Methodology", "Team Leadership", "Budget Management"],
-    verificationUrl: "https://verify.managementacademy.com/PM-2023-001234",
+  const mapStatusToColor = (status?: string) => {
+    switch (status) {
+      case "claimed":
+        return "#4ade80" // Green
+      case "issued":
+        return "#60a5fa" // Blue
+      case "revoked":
+        return "#f87171" // Red
+      case "waiting_for_id":
+        return "#fbbf24" // Yellow
+      case "draft":
+        return "#a78bfa" // Purple
+      case "expired":
+        return "#f87171" // Red for expired
+      default:
+        return "#9ca3af" // Gray for unknown status
+    }
   }
-
-  const cert = certificate || defaultCertificate
 
   const generateGradient = () => {
     const baseColors = [
@@ -118,12 +128,12 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
                     </svg>
                   </div>
                 </div>
-                <h2 className="certificateTitle">{cert.title}</h2>
-                <p className="certificateIssuer">Issued by {cert.issuedBy}</p>
-                <div className="certificateId">ID: {cert.credentialId}</div>
+                <h2 className="certificateTitle">{cert?.title}</h2>
+                <p className="certificateIssuer">Issued by {cert?.issuer?.name}</p>
+                <div className="certificateId">ID: {cert?.certificateId}</div>
                 <div className="certificateDates">
-                  <span>Issued: {cert.issueDate}</span>
-                  <span>Expires: {cert.expiryDate}</span>
+                  <span>Issued: {moment(cert?.createdAt).format("YYYY-MM-DD")}</span>
+                  <span>Expires: {cert?.expiredAt ? moment(cert?.expiredAt).format("YYYY-MM-DD") : "No Expire"}</span>
                 </div>
               </div>
             </div>
@@ -132,10 +142,13 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
           <div className="certificateInfo">
             <div className="infoHeader">
               <div className="titleSection">
-                <h1>{cert.title}</h1>
+                <h1>{cert?.title}</h1>
                 <div className="statusBadge">
-                  <span className={`status ${cert.status.toLowerCase()}`}>{cert.status}</span>
-                  <span className="category">{cert.category}</span>
+                  {/* <span className={`status ${cert?.status.toLowerCase()}`}>{cert?.status}</span> */}
+                  <Tag color={mapStatusToColor((!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : "expired")}>
+                    {(!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : "expired"}
+                  </Tag>
+                  <span className="category">Certificate</span>
                 </div>
               </div>
               <div className="actionButtons">
@@ -193,12 +206,12 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
               >
                 Details
               </button>
-              <button
+              {/* <button
                 className={`tab ${activeTab === "skills" ? "active" : ""}`}
                 onClick={() => setActiveTab("skills")}
               >
                 Skills
-              </button>
+              </button> */}
             </div>
 
             <div className="tabContent">
@@ -206,26 +219,26 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
                 <div className="overviewTab">
                   <div className="section">
                     <h3>Description</h3>
-                    <p>{cert.description}</p>
+                    <p>{cert?.description}</p>
                   </div>
                   <div className="section">
                     <h3>Key Information</h3>
                     <div className="infoGrid">
                       <div className="infoItem">
                         <span className="label">Issued By</span>
-                        <span className="value">{cert.issuedBy}</span>
+                        <span className="value">{cert?.issuer?.name}</span>
                       </div>
                       <div className="infoItem">
                         <span className="label">Issue Date</span>
-                        <span className="value">{cert.issueDate}</span>
+                        <span className="value">{moment(cert?.createdAt).format("YYYY-MM-DD")}</span>
                       </div>
                       <div className="infoItem">
                         <span className="label">Expiry Date</span>
-                        <span className="value">{cert.expiryDate}</span>
+                        <span className="value">{cert?.expiredAt ? moment(cert?.expiredAt).format("YYYY-MM-DD") : "No Expire"}</span>
                       </div>
                       <div className="infoItem">
                         <span className="label">Credential ID</span>
-                        <span className="value">{cert.credentialId}</span>
+                        <span className="value">{cert?.certificateId}</span>
                       </div>
                     </div>
                   </div>
@@ -255,15 +268,15 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
                       </div>
                     </div>
                   </div>
-                  <div className="section">
+                  {/* <div className="section">
                     <h3>Verification</h3>
                     <p>
                       This certificate can be verified using the credential ID above or by visiting the verification
                       URL.
                     </p>
-                    {cert.verificationUrl && (
+                    {cert?.certificateId && (
                       <a
-                        href={cert.verificationUrl}
+                        href={`https://verify.example.com/${cert.certificateId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="verificationLink"
@@ -271,32 +284,7 @@ export default function CertificateDetail({ certificate, onClose }: CertificateD
                         Verify Certificate Online
                       </a>
                     )}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "skills" && (
-                <div className="skillsTab">
-                  <div className="section">
-                    <h3>Skills Covered</h3>
-                    <div className="skillsList">
-                      {cert.skills?.map((skill, index) => (
-                        <span key={index} className="skillTag">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="section">
-                    <h3>Competencies</h3>
-                    <ul className="competenciesList">
-                      <li>Demonstrated proficiency in project planning and execution</li>
-                      <li>Understanding of risk management principles</li>
-                      <li>Knowledge of Agile and traditional project methodologies</li>
-                      <li>Ability to lead cross-functional teams</li>
-                      <li>Budget management and resource allocation skills</li>
-                    </ul>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>

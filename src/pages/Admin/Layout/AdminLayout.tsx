@@ -31,9 +31,15 @@ const AdminLayout: React.FC = () => {
           <Menu.Item key="users" icon={<UserOutlined />}>
             <Link to="/admin/users">Users</Link>
           </Menu.Item>
-          {userInfo.role === 'org_manager' &&
+          {(userInfo?.organization?.type === "issuer") &&
             <Menu.Item key="certificates" icon={<IdcardOutlined />}>
               <Link to="/admin/certificates">Certificates</Link>
+            </Menu.Item>
+          }
+          {
+            (userInfo?.organization?.type === "verifier") &&
+            <Menu.Item key="verifier-verify" icon={<IdcardOutlined />}>
+              <Link to="/admin/verifier-verify">Verify Certificates</Link>
             </Menu.Item>
           }
           {userInfo.role === 'admin' &&

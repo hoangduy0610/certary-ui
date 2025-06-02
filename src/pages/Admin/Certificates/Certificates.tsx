@@ -1,5 +1,5 @@
-import { CheckCircleOutlined, DeleteOutlined, EditOutlined, ExportOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, message, Row, Space, Table, Tag } from 'antd';
+import { CheckCircleOutlined, DeleteOutlined, EditOutlined, ExportOutlined, FilterOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons';
+import { Button, Col, message, Popconfirm, Popover, Row, Space, Table, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../../../components/AdminHeader/adminHeader';
@@ -95,6 +95,11 @@ const CertificatesPage: React.FC = () => {
       key: 'tokenId',
     },
     {
+      title: 'Certificate ID',
+      dataIndex: 'certificateId',
+      key: 'certificateId',
+    },
+    {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
@@ -158,14 +163,31 @@ const CertificatesPage: React.FC = () => {
       key: 'actions',
       render: (_: any, record: Certificate) => (
         <Space size="middle">
-          <Button variant="outlined" color="primary" onClick={() => {
+          {/* <Button variant="outlined" color="primary" onClick={() => {
             handleEditCertificate(record);
           }}>
             <EditOutlined />
-          </Button>
-          <Button variant="outlined" className="ms-2" danger onClick={() => { }}>
-            <DeleteOutlined />
-          </Button>
+          </Button> */}
+          {
+            record.status !== 'revoked' && (
+              <Popconfirm
+                title="Are you sure you want to revoke this certificate?"
+                onConfirm={async () => {
+                  try {
+                    await CertificateAPI.revoke(record.id);
+                    messageApi.success('Certificate revoke successfully');
+                    fetchCertificates(); // Refresh the certificate list
+                  } catch (error) {
+                    messageApi.error('Error revoking certificate');
+                  }
+                }}
+              >
+                <Button variant="outlined" className="ms-2" danger>
+                  <StopOutlined />
+                </Button>
+              </Popconfirm>
+            )
+          }
         </Space>
       ),
     },
@@ -180,11 +202,14 @@ const CertificatesPage: React.FC = () => {
 
   const handleVerify = () => {
     if (selectedRowKeys.length === 1) {
-      const certId = data.find(cert => cert.id === selectedRowKeys[0])?.id;
+      const certId = data.find(cert => cert.id === selectedRowKeys[0])?.certificateId;
       if (certId) {
         navigate(`/admin/certificates/verify?id=${certId}`);
+        return;
       }
     }
+
+    navigate('/admin/certificates/verify');
   };
 
   return (
@@ -203,7 +228,7 @@ const CertificatesPage: React.FC = () => {
             </Col>
             <Col>
               <Space>
-                <Button icon={<CheckCircleOutlined />} disabled={selectedRowKeys.length === 0} onClick={handleVerify}>
+                <Button icon={<CheckCircleOutlined />} onClick={handleVerify}>
                   Verify
                 </Button>
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateCertificate}>
@@ -214,7 +239,7 @@ const CertificatesPage: React.FC = () => {
           </Row>
           <Table
             rowKey="id"
-            rowSelection={rowSelection}
+            rowSelection={{ type: 'radio', ...rowSelection }}
             columns={columns}
             dataSource={data}
             className="certificates-table"
