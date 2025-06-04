@@ -37,6 +37,7 @@ const AppRoute = () => {
         <Route path="users" element={<Users />} />
         <Route path="certificates" element={<Certificates />} />
         <Route path="certificates/verify" element={<VerifyCertificate />} />
+        <Route path="verifier-verify" element={<VerifyCertificate isForVerifier />} />
         <Route path="organizations" element={<Organizations />} />
       </Route>
 

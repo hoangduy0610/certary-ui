@@ -5,5 +5,5 @@ export const logout = () => {
         localStorage.removeItem(key)
     })
     sessionStorage.clear()
-    window.location.href = '/login'
+    window.location.href = '/'
 }

@@ -7,6 +7,7 @@ import "./login.scss"
 import { authAPI } from "../../services/authAPI"
 import { StorageKeys } from "../../common/StorageKeys"
 import { Button, Form } from "antd"
+import { useUserInfo } from "../../hooks/useUserInfo"
 
 interface LoginFormData {
   email: string
@@ -20,6 +21,7 @@ const LoginForm: React.FC = () => {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { getUserInfo } = useUserInfo();
 
   const navigate = useNavigate()
 
@@ -43,6 +45,7 @@ const LoginForm: React.FC = () => {
       localStorage.setItem(StorageKeys.AUTH_TOKEN, response.token || "")
       localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(response.info || {}))
       console.log("Đăng nhập thành công:", response)
+      getUserInfo();
       // Chuyển hướng về trang chủ
       navigate("/")
     } catch (err: any) {

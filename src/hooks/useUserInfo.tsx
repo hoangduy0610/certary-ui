@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { StorageKeys } from "../common/StorageKeys";
 import { authAPI } from "../services/authAPI";
+import { Organization } from "../services/organizationsAPI";
 
 export interface UserInfo {
     createdAt: Date;
@@ -12,6 +13,7 @@ export interface UserInfo {
     organizationId?: number;
     role: "user" | "org_manager" | "org_staff" | "admin";
     updatedAt: Date;
+    organization?: Organization;
     walletAddress?: string;
 }
 
@@ -34,7 +36,7 @@ export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
         const storedUserInfo = localStorage.getItem(StorageKeys.USER_INFO);
 
         const res = await authAPI.callback();
-        if (res && res.data) {
+        if (res && res?.data) {
             setUserInfo(res.data);
             localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(res.data));
         } else if (storedUserInfo) {

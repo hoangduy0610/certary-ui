@@ -1,8 +1,9 @@
 import type React from "react"
 import { useState } from "react"
-import "./forum.scss"
-import TopicDetail from "../ForumDetail/forum-detail"
 import Footer from "../../components/Footer/footer"
+import { Header } from "../../components/Header/Header"
+import TopicDetail from "../ForumDetail/forum-detail"
+import "./forum.scss"
 
 interface Topic {
     id: number
@@ -547,29 +548,7 @@ export default function Forum() {
 
     return (
         <div className="forumPage">
-            <header className="header">
-                <button
-                    onClick={handleBackToForum}
-                    className="logo"
-                    style={{ background: "none", border: "none", cursor: "pointer" }}
-                >
-                    Certary
-                </button>
-                <nav className="navigation">
-                    <a href="/my-certificates" className="navLink">
-                        My Certificate
-                    </a>
-                    <a href="/forum" className="navLink active">
-                        Forum
-                    </a>
-                    <a href="/contact" className="navLink">
-                        Contact
-                    </a>
-                    <a href="/login" className="navLink">
-                        Login
-                    </a>
-                </nav>
-            </header>
+            <Header active="forum" />
 
             {currentView === "forum" ? (
                 renderForumView()

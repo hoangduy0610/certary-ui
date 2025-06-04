@@ -1,13 +1,47 @@
 "use client"
 
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Footer from "../../components/Footer/footer"
+import { Certificate, CertificateAPI } from "../../services/certificateAPI"
 import "./my-certificates.scss"
-import { useState, useMemo } from "react"
+import moment from "moment"
+import { Header } from "../../components/Header/Header"
 
 export default function MyCertificates() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState("all")
+  const [certificates, setCertificates] = useState<Certificate[]>([])
+
+  const fetchCertificates = async () => {
+    // Simulating an API call to fetch certificates
+    const data = await CertificateAPI.getAll();
+    setCertificates(data)
+  }
+
+  useEffect(() => {
+    // Fetch certificates when component mounts
+    fetchCertificates()
+  }, [])
+
+  const mapBackgroundColorStatus = (status: string) => {
+    switch (status) {
+      case "claimed":
+        return "#4ade80" // Green
+      case "issued":
+        return "#60a5fa" // Blue
+      case "revoked":
+        return "#f87171" // Red
+      case "waiting_for_id":
+        return "#fbbf24" // Yellow
+      case "draft":
+        return "#a78bfa" // Purple
+      case "expired":
+        return "#f87171" // Red for expired
+      default:
+        return "#9ca3af" // Gray for unknown status
+    }
+  }
 
   // Function to generate harmonious gradient colors
   const generateGradient = () => {
@@ -27,63 +61,6 @@ export default function MyCertificates() {
 
   const navigate = useNavigate()
 
-  const certificates = [
-    {
-      id: 1,
-      title: "Project Management Certificate",
-      issuedBy: "Management Academy",
-      issueDate: "15/03/2023",
-      expiryDate: "15/03/2025",
-      status: "Valid",
-      category: "Management",
-    },
-    {
-      id: 2,
-      title: "Web Development Fundamentals",
-      issuedBy: "Tech Institute",
-      issueDate: "22/05/2023",
-      expiryDate: "22/05/2026",
-      status: "Valid",
-      category: "Technology",
-    },
-    {
-      id: 3,
-      title: "Data Science Certification",
-      issuedBy: "Data Analytics School",
-      issueDate: "10/01/2023",
-      expiryDate: "10/01/2025",
-      status: "Valid",
-      category: "Technology",
-    },
-    {
-      id: 4,
-      title: "Leadership Excellence",
-      issuedBy: "Business Academy",
-      issueDate: "05/07/2023",
-      expiryDate: "05/07/2025",
-      status: "Valid",
-      category: "Management",
-    },
-    {
-      id: 5,
-      title: "Digital Marketing Specialist",
-      issuedBy: "Marketing Institute",
-      issueDate: "30/04/2023",
-      expiryDate: "30/04/2025",
-      status: "Valid",
-      category: "Marketing",
-    },
-    {
-      id: 6,
-      title: "UX/UI Design Principles",
-      issuedBy: "Design School",
-      issueDate: "12/06/2023",
-      expiryDate: "12/06/2025",
-      status: "Valid",
-      category: "Design",
-    },
-  ]
-
   // Generate random gradients for each certificate
   const certificateGradients = useMemo(() => {
     return certificates.map(() => {
@@ -96,33 +73,14 @@ export default function MyCertificates() {
   const filteredCertificates = certificates.filter((cert) => {
     const matchesSearch =
       cert.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cert.issuedBy.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesFilter = activeFilter === "all" || cert.category.toLowerCase() === activeFilter.toLowerCase()
+      cert.issuer?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = activeFilter === "all"
     return matchesSearch && matchesFilter
   })
 
   return (
     <div className="certificatesPage">
-
-      <header className="header">
-        <a href="/" className="logo" style={{ textDecoration: "none" }}>
-          Certary
-        </a>
-        <nav className="navigation">
-          <a href="/my-certificates" className="navLink active">
-            My Certificate
-          </a>
-          <a href="/forum" className="navLink">
-            Forum
-          </a>
-          <a href="/contact" className="navLink">
-            Contact
-          </a>
-          <a href="/login" className="navLink">
-            Login
-          </a>
-        </nav>
-      </header>
+      <Header active="my-certificates" />
 
       <div className="certificatesHero">
         <div className="certificatesHeroContent">
@@ -168,7 +126,7 @@ export default function MyCertificates() {
               >
                 All
               </button>
-              <button
+              {/* <button
                 className={`filterTab ${activeFilter === "technology" ? "active" : ""}`}
                 onClick={() => setActiveFilter("technology")}
               >
@@ -185,7 +143,7 @@ export default function MyCertificates() {
                 onClick={() => setActiveFilter("marketing")}
               >
                 Marketing
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -195,7 +153,7 @@ export default function MyCertificates() {
               <div className="statLabel">Total Certificates</div>
             </div>
             <div className="statCard">
-              <div className="statValue">{certificates.filter((c) => c.status === "Valid").length}</div>
+              <div className="statValue">{certificates.filter((c) => ["claimed", "issued"].includes(c.status)).length}</div>
               <div className="statLabel">Valid Certificates</div>
             </div>
             <div className="statCard">
@@ -211,23 +169,25 @@ export default function MyCertificates() {
                   <div className="certificateColorBar" style={{ background: certificateGradients[index] }}></div>
                 </div>
                 <div className="certificateBody">
-                  <div className="certificateCategory">{cert.category}</div>
+                  <div className="certificateCategory">Certificate</div>
                   <h3>{cert.title}</h3>
                   <div className="certificateDetail">
                     <span className="detailLabel">Issued by:</span>
-                    <span className="detailValue">{cert.issuedBy}</span>
+                    <span className="detailValue">{cert?.issuer?.name}</span>
                   </div>
                   <div className="certificateDetail">
                     <span className="detailLabel">Issue Date:</span>
-                    <span className="detailValue">{cert.issueDate}</span>
+                    <span className="detailValue">{moment(cert.createdAt).format("YYYY-MM-DD")}</span>
                   </div>
                   <div className="certificateDetail">
                     <span className="detailLabel">Expiry Date:</span>
-                    <span className="detailValue">{cert.expiryDate}</span>
+                    <span className="detailValue">{cert.expiredAt ? moment(cert.expiredAt).format("YYYY-MM-DD") : "No Expire"}</span>
                   </div>
                   <div className="certificateDetail">
                     <span className="detailLabel">Status:</span>
-                    <span className="status-valid">{cert.status}</span>
+                    <span className="status-valid" style={{
+                      backgroundColor: mapBackgroundColorStatus((!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : "expired"),
+                    }}>{(!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : "expired"}</span>
                   </div>
                   <div className="certificateActions">
                     <button className="btnLink" onClick={() => navigate(`/certificate-details/${cert.id}`)}>
@@ -275,6 +235,6 @@ export default function MyCertificates() {
         </div>
       </div>
       <Footer />
-    </div>
+    </div >
   )
 }

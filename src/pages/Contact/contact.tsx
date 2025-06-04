@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import "./contact.scss"
 import Footer from "../../components/Footer/footer"
+import { Header } from "../../components/Header/Header"
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -48,25 +49,7 @@ export default function Contact() {
 
   return (
     <div className="contactPage">
-      <header className="header">
-        <a href="/" className="logo" style={{ textDecoration: "none" }}>
-          Certary
-        </a>
-        <nav className="navigation">
-          <a href="/my-certificates" className="navLink">
-            My Certificate
-          </a>
-          <a href="/forum" className="navLink">
-            Forum
-          </a>
-          <a href="/contact" className="navLink active">
-            Contact
-          </a>
-          <a href="/login" className="navLink">
-            Login
-          </a>
-        </nav>
-      </header>
+      <Header active="contact" />
 
       <div className="contactHero">
         <div className="contactHeroContent">
