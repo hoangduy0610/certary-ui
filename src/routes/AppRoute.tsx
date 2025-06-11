@@ -6,6 +6,7 @@ import Home from '../pages/Home/home';
 import MyCertificates from '../pages/MyCertificates/my-certificates';
 import Contact from '../pages/Contact/contact';
 import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
+import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
 
 // Admin Pages
 import AdminLayout from '../pages/Admin/Layout/AdminLayout';
@@ -13,7 +14,7 @@ import Dashboard from '../pages/Admin/Dashboard/Dashboard';
 import Users from '../pages/Admin/Users/Users';
 import Certificates from '../pages/Admin/Certificates/Certificates';
 import Organizations from '../pages/Admin/Organizations/Organizations';
-import VerifyCertificate from '../pages/Admin/VerifyCertificate/VerifyCertificate';
+// import VerifyCertificate from '../pages/Admin/VerifyCertificate/VerifyCertificate';
 import Forum from '../pages/Forum/forum';
 import Login from '../pages/Login/login';
 import Register from '../pages/Register/register';
@@ -30,6 +31,9 @@ const AppRoute = () => {
       <Route path="/certificate-details/:id" element={<CertificatesDetails />} />
       <Route path="/forum" element={<Forum />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/verify-certificate" element={<VerifyCertificate />} />
+
+      {/* Protected Routes */}
 
       {/* Admin Routes with Layout */}
       <Route path="/admin" element={<AdminLayout />}>
@@ -37,7 +41,7 @@ const AppRoute = () => {
         <Route path="users" element={<Users />} />
         <Route path="certificates" element={<Certificates />} />
         <Route path="certificates/verify" element={<VerifyCertificate />} />
-        <Route path="verifier-verify" element={<VerifyCertificate isForVerifier />} />
+        {/* <Route path="verifier-verify" element={<VerifyCertificate isForVerifier />} /> */}
         <Route path="organizations" element={<Organizations />} />
       </Route>
 
