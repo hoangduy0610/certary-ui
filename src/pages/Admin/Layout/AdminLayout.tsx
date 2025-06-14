@@ -4,6 +4,7 @@ import {
   DashboardOutlined,
   IdcardOutlined,
   UserOutlined,
+  BookOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { useState } from 'react';
@@ -16,7 +17,10 @@ const { Sider, Content } = Layout;
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const selectedKey = location.pathname.split('/')[2] || 'dashboard';
-  const { userInfo } = useUserInfo();
+  const { userInfo } = useUserInfo() || {
+    organization: { type: "issuer" },
+    role: "admin",
+  };
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -37,22 +41,35 @@ const AdminLayout: React.FC = () => {
           <Menu.Item key="users" icon={<UserOutlined />}>
             <Link to="/admin/users">Users</Link>
           </Menu.Item>
-          {(userInfo?.organization?.type === "issuer") &&
-            <Menu.Item key="certificates" icon={<IdcardOutlined />}>
-              <Link to="/admin/certificates">Certificates</Link>
+
+          {userInfo?.organization?.type === "issuer" && (
+            <>
+              <Menu.Item key="certificates" icon={<IdcardOutlined />}>
+                <Link to="/admin/certificates">Certificates</Link>
+              </Menu.Item>
+            </>
+          )}
+
+          <Menu.Item key="certificate-types" icon={<BookOutlined />}>
+            <Link to="/admin/certificate-types">Certificate Types</Link>
+          </Menu.Item>
+
+  
+            <Menu.Item key="custom-certificates" icon={<IdcardOutlined />}>
+              <Link to="/admin/custom-certificates">Custom Certificates</Link>
             </Menu.Item>
-          }
-          {
-            (userInfo?.organization?.type === "verifier") &&
+
+          {userInfo?.organization?.type === "verifier" && (
             <Menu.Item key="verifier-verify" icon={<IdcardOutlined />}>
               <Link to="/admin/verifier-verify">Verify Certificates</Link>
             </Menu.Item>
-          }
-          {userInfo.role === 'admin' &&
+          )}
+
+          {userInfo.role === 'admin' && (
             <Menu.Item key="organizations" icon={<ApartmentOutlined />}>
               <Link to="/admin/organizations">Organizations</Link>
             </Menu.Item>
-          }
+          )}
         </Menu>
       </Sider>
       <Layout>

@@ -1,3 +1,91 @@
-.admin-wrapper {
-    margin: 16px;
+// AdminLayout.scss
+
+$primary-color: #1890ff;
+$hover-bg: #e6f7ff;
+$selected-bg: #bae7ff;
+$text-color: #000;
+$menu-radius: 8px;
+
+.logo-container {
+  text-align: center;
+  padding: 20px 0;
+  background: linear-gradient(135deg, #84c5f4, #1890ff);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #dbeafe;
+  transition: all 0.3s ease;
+
+  h2 {
+    margin: 0;
+    color: white;
+    transition: all 0.3s ease;
+  }
+}
+
+.ant-layout-sider {
+  background-color: #ffffff !important;
+  border-right: 1px solid #f0f0f0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.ant-menu {
+  background: transparent;
+
+  .ant-menu-item {
+    padding: 10px 24px;
+    margin: 0; // ✅ bỏ margin để không bị tràn
+    border-radius: 8px;
+    font-weight: 500;
+    color: $text-color;
+    transition: all 0.2s ease-in-out;
+
+    a {
+      color: inherit;
+    }
+
+    &:hover {
+      background-color: $hover-bg;
+      color: $primary-color;
+
+      a {
+        color: $primary-color;
+      }
+
+      svg {
+        color: $primary-color;
+      }
+    }
+
+    &.ant-menu-item-selected {
+      background-color: $selected-bg;
+      color: $primary-color;
+
+      a {
+        color: $primary-color;
+      }
+
+      svg {
+        color: $primary-color;
+      }
+    }
+
+    svg {
+      color: $text-color;
+    }
+  }
+}
+
+.ant-layout-content {
+  background: #f5f7fa;
+  padding: 24px;
+  min-height: 100vh;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: #2c3e50;
+  }
 }
