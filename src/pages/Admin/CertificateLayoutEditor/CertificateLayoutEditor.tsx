@@ -304,7 +304,7 @@ const CertificateLayoutEditor = () => {
                         reader.onload = async (event) => {
                             const dataUrl = event.target?.result as string;
                             const img = await fabric.FabricImage.fromURL(dataUrl, { crossOrigin: 'anonymous' });
-                            img.set({ left: 0, top: 0, scaleX: 0.5, scaleY: 0.5 });
+                            img.set({ left: 0, top: 0, scaleX: 1, scaleY: 1 });
                             fabricRef.current?.add(img);
                             fabricRef.current?.setActiveObject(img);
                             fabricRef.current?.requestRenderAll();
