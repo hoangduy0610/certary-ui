@@ -24,6 +24,7 @@ import CertificatePreview from '../pages/Admin/CustomCertificate/certificate-pre
 import Forum from '../pages/Forum/forum';
 import Login from '../pages/Login/login';
 import Register from '../pages/Register/register';
+import CertificateLayoutEditor from '../pages/Admin/CertificateLayoutEditor/CertificateLayoutEditor';
 
 const AppRoute = () => {
   return (
@@ -46,6 +47,7 @@ const AppRoute = () => {
         <Route path="certificates/verify" element={<VerifyCertificate />} />
         <Route path="certificate-types" element={<CertificateTypes />} />
         <Route path="organizations" element={<Organizations />} />
+        <Route path="layout" element={<CertificateLayoutEditor />} />
 
         {/* Custom Certificate Routes */}
         <Route path="custom-certificates" element={<CertificatesCustom />} />
@@ -54,8 +56,8 @@ const AppRoute = () => {
           element={
             <CertificateEditor
               template={{} as any} // TODO: Replace with actual template data or fetch logic and type
-              onSave={() => {}} // Replace with actual save handler
-              onCancel={() => {}} // Replace with actual cancel handler
+              onSave={() => { }} // Replace with actual save handler
+              onCancel={() => { }} // Replace with actual cancel handler
             />
           }
         />
@@ -64,8 +66,8 @@ const AppRoute = () => {
           element={
             <CertificatePreview
               template={{} as any} // TODO: Replace with actual template data or fetch logic and type
-              onBack={() => {}} // Replace with actual back handler
-              onEdit={() => {}} // Replace with actual edit handler
+              onBack={() => { }} // Replace with actual back handler
+              onEdit={() => { }} // Replace with actual edit handler
             />
           }
         />
