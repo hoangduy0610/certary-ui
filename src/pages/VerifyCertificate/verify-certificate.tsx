@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import "./verify-certificate.scss"
 import { Header } from "../../components/Header/Header"
+import Footer from "../../components/Footer/footer"
 
 interface Certificate {
   id: string
@@ -464,6 +465,7 @@ export default function VerifyCertificate() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

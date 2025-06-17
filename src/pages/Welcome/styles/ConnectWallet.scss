@@ -1,0 +1,706 @@
+// Variables
+$primary-gradient: linear-gradient(135deg, #1e293b, #475569);
+$orange-gradient: linear-gradient(135deg, #f97316, #ea580c);
+$success-gradient: linear-gradient(135deg, #10b981, #059669);
+$blue-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+$purple-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed);
+$error-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+
+// Mixins
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@mixin gradient-text($gradient) {
+  background: $gradient;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@mixin button-gradient($gradient) {
+  background: $gradient;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+}
+
+// Connect Wallet Page Styles
+.connect-wallet-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%);
+  padding: 3rem 1rem;
+  position: relative;
+  overflow: hidden;
+
+  // Background Elements
+  .background-elements {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+
+    .floating-orb {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+      filter: blur(40px);
+      opacity: 0.1;
+
+      &.orb-1 {
+        top: 5rem;
+        right: 5rem;
+        width: 16rem;
+        height: 16rem;
+        background: $blue-gradient;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      &.orb-2 {
+        bottom: 5rem;
+        left: 5rem;
+        width: 16rem;
+        height: 16rem;
+        background: $purple-gradient;
+        animation: float 10s ease-in-out infinite reverse;
+      }
+    }
+  }
+
+  // Main Container
+  .wallet-container {
+    position: relative;
+    z-index: 10;
+    max-width: 32rem;
+    margin: 0 auto;
+    transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    &.hidden {
+      opacity: 0;
+      transform: translateY(2.5rem);
+    }
+
+    // Back Button
+    .back-button {
+      margin-bottom: 2rem;
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #475569;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #1e293b;
+        }
+
+        .arrow-icon {
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+
+    // Header Section
+    .header-section {
+      text-align: center;
+      margin-bottom: 3rem;
+
+      .header-icon {
+        width: 5rem;
+        height: 5rem;
+        background: $orange-gradient;
+        border-radius: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 25px 50px rgba(249, 115, 22, 0.3);
+
+        .wallet-icon {
+          width: 2.5rem;
+          height: 2.5rem;
+          color: white;
+        }
+      }
+
+      .main-title {
+        font-size: clamp(2.5rem, 6vw, 3rem);
+        font-weight: 800;
+        @include gradient-text($primary-gradient);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        font-size: 1.25rem;
+        color: #475569;
+        line-height: 1.6;
+      }
+    }
+
+    // Main Card
+    .main-card {
+      @include glass-effect;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+
+      @media (min-width: 768px) {
+        padding: 3rem;
+      }
+
+      // Disconnected State
+      .disconnected-state {
+        // MetaMask Info
+        .metamask-info {
+          text-align: center;
+          margin-bottom: 2rem;
+
+          .metamask-logo {
+            width: 6rem;
+            height: 6rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .logo-img {
+              width: 3rem;
+              height: 3rem;
+            }
+          }
+
+          .metamask-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+          }
+
+          .metamask-description {
+            color: #475569;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+          }
+        }
+
+        // Benefits Section
+        .benefits-section {
+          display: grid;
+          gap: 1rem;
+          margin-bottom: 2rem;
+
+          .benefit-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid;
+            transition: all 0.3s ease;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            &.security-card {
+              background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+              border-color: #bbf7d0;
+
+              .benefit-icon {
+                background: $success-gradient;
+              }
+            }
+
+            &.access-card {
+              background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+              border-color: #bfdbfe;
+
+              .benefit-icon {
+                background: $blue-gradient;
+              }
+            }
+
+            &.recognition-card {
+              background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+              border-color: #d8b4fe;
+
+              .benefit-icon {
+                background: $purple-gradient;
+              }
+            }
+
+            .benefit-icon {
+              width: 2rem;
+              height: 2rem;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+
+              .icon {
+                width: 1rem;
+                height: 1rem;
+                color: white;
+              }
+            }
+
+            .benefit-content {
+              .benefit-title {
+                font-weight: 600;
+                color: #1e293b;
+                margin-bottom: 0.25rem;
+              }
+
+              .benefit-description {
+                font-size: 0.875rem;
+                color: #475569;
+              }
+            }
+          }
+        }
+
+        // Error Message
+        .error-message {
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+          border: 1px solid #fca5a5;
+          border-radius: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .error-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #ef4444;
+            flex-shrink: 0;
+          }
+
+          .error-text {
+            color: #b91c1c;
+            font-weight: 500;
+          }
+        }
+
+        // Connect Button Section
+        .connect-section {
+          text-align: center;
+
+          .connect-btn {
+            @include button-gradient($orange-gradient);
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0 auto;
+            box-shadow: 0 25px 50px rgba(249, 115, 22, 0.3);
+
+            &:hover:not(:disabled) {
+              box-shadow: 0 35px 70px rgba(249, 115, 22, 0.4);
+            }
+
+            .wallet-icon {
+              width: 1.25rem;
+              height: 1.25rem;
+            }
+
+            .loading-spinner {
+              width: 1.25rem;
+              height: 1.25rem;
+              border: 2px solid rgba(255, 255, 255, 0.3);
+              border-top: 2px solid white;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+            }
+          }
+
+          .install-link {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 1rem;
+
+            .link {
+              color: #ea580c;
+              font-weight: 500;
+              text-decoration: none;
+              display: inline-flex;
+              align-items: center;
+              gap: 0.25rem;
+              transition: color 0.3s ease;
+
+              &:hover {
+                color: #c2410c;
+              }
+
+              .external-icon {
+                width: 0.75rem;
+                height: 0.75rem;
+              }
+            }
+          }
+        }
+      }
+
+      // Connected State
+      .connected-state {
+        text-align: center;
+
+        .success-icon {
+          width: 4rem;
+          height: 4rem;
+          background: $success-gradient;
+          border-radius: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 1.5rem;
+
+          .check-icon {
+            width: 2rem;
+            height: 2rem;
+            color: white;
+          }
+        }
+
+        .success-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 1rem;
+        }
+
+        .success-description {
+          color: #475569;
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+
+        .address-display {
+          background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          border: 1px solid #bbf7d0;
+          margin-bottom: 2rem;
+
+          .address-label {
+            font-size: 0.875rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+          }
+
+          .address-value {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            background: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            color: #1e293b;
+          }
+        }
+
+        .action-buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          justify-content: center;
+
+          @media (min-width: 640px) {
+            flex-direction: row;
+          }
+
+          .continue-btn {
+            @include button-gradient(linear-gradient(135deg, #6366f1, #8b5cf6));
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+
+            &:hover {
+              box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+            }
+          }
+
+          .disconnect-btn {
+            background: white;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+              background: #f8fafc;
+              border-color: #cbd5e1;
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+          }
+        }
+      }
+    }
+
+    // Progress Indicator
+    .progress-indicator {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+
+      .progress-dots {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .dot {
+          width: 0.75rem;
+          height: 0.75rem;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .line {
+          width: 2rem;
+          height: 0.25rem;
+          border-radius: 0.125rem;
+          background: $orange-gradient;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .connect-wallet-page {
+    padding: 2rem 1rem;
+
+    .wallet-container {
+      .main-card {
+        padding: 1.5rem;
+
+        .disconnected-state {
+          .metamask-info {
+            .metamask-logo {
+              width: 5rem;
+              height: 5rem;
+
+              .logo-img {
+                width: 2.5rem;
+                height: 2.5rem;
+              }
+            }
+          }
+
+          .benefits-section {
+            .benefit-card {
+              flex-direction: column;
+              text-align: center;
+              padding: 1.5rem;
+
+              .benefit-icon {
+                margin-bottom: 0.5rem;
+              }
+            }
+          }
+        }
+
+        .connected-state {
+          .action-buttons {
+            .continue-btn,
+            .disconnect-btn {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .connect-wallet-page {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+
+    .wallet-container {
+      .back-button {
+        .back-btn {
+          color: #94a3b8;
+
+          &:hover {
+            color: #f1f5f9;
+          }
+        }
+      }
+
+      .header-section {
+        .main-title {
+          @include gradient-text(linear-gradient(135deg, #f1f5f9, #cbd5e1));
+        }
+
+        .subtitle {
+          color: #94a3b8;
+        }
+      }
+
+      .main-card {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        .disconnected-state {
+          .metamask-info {
+            .metamask-title {
+              color: #f1f5f9;
+            }
+
+            .metamask-description {
+              color: #cbd5e1;
+            }
+          }
+
+          .benefits-section {
+            .benefit-card {
+              &.security-card {
+                background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+                border-color: #059669;
+              }
+
+              &.access-card {
+                background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+                border-color: #2563eb;
+              }
+
+              &.recognition-card {
+                background: linear-gradient(135deg, #581c87 0%, #6b21a8 100%);
+                border-color: #7c3aed;
+              }
+
+              .benefit-content {
+                .benefit-title {
+                  color: #f1f5f9;
+                }
+
+                .benefit-description {
+                  color: #cbd5e1;
+                }
+              }
+            }
+          }
+        }
+
+        .connected-state {
+          .success-title {
+            color: #f1f5f9;
+          }
+
+          .success-description {
+            color: #cbd5e1;
+          }
+
+          .address-display {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            border-color: #059669;
+
+            .address-label {
+              color: #cbd5e1;
+            }
+
+            .address-value {
+              background: #1e293b;
+              border-color: #475569;
+              color: #f1f5f9;
+            }
+          }
+
+          .action-buttons {
+            .disconnect-btn {
+              background: #1e293b;
+              color: #cbd5e1;
+              border-color: #475569;
+
+              &:hover {
+                background: #334155;
+                border-color: #64748b;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

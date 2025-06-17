@@ -1,0 +1,475 @@
+:root {
+  --primary-color: #3730a3;
+  --accent-color: #4f46e5;
+  --light-text: #6b7280;
+  --background-color: #f5f3ff;
+  --gradient-start: #4338ca;
+  --gradient-end: #6366f1;
+  --success-color: #10b981;
+  --success-light: #d1fae5;
+  --success-dark: #047857;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.claimCertificatePage {
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: #1f2937;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  
+  .loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid var(--success-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  p {
+    color: var(--light-text);
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.claimHero {
+  background: linear-gradient(135deg, var(--success-color), #34d399);
+  color: white;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+  
+  .claimHeroContent {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.1rem;
+      letter-spacing: -0.025em;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .heroShape {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-color: var(--background-color);
+    clip-path: ellipse(50% 50% at 50% 100%);
+    z-index: 1;
+  }
+}
+
+.claimContainer {
+  max-width: 1200px;
+  margin: -50px auto 4rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+.claimCard {
+  background-color: white;
+  border-radius: 1rem;
+  margin-top: 70px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+}
+
+.claimActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.searchContainer {
+  position: relative;
+  min-width: 300px;
+  
+  .searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+  }
+  
+  .searchButton {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: color 0.2s;
+    
+    &:hover {
+      color: var(--success-color);
+    }
+  }
+}
+
+.filterTabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  
+  .filterTab {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: white;
+    color: var(--light-text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+    
+    &.active {
+      background-color: var(--success-color);
+      color: white;
+      border-color: var(--success-color);
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #6b7280, #9ca3af);
+  color: white;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+.btn-claim {
+  background: linear-gradient(135deg, var(--success-color), #34d399);
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .backIcon {
+    margin-right: 0.25rem;
+  }
+}
+
+.claimStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  
+  .statCard {
+    background-color: var(--success-light);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    transition: all 0.2s;
+    border: 1px solid #a7f3d0;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(16, 185, 129, 0.1);
+      background-color: white;
+    }
+    
+    .statValue {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--success-color);
+      margin-bottom: 0.5rem;
+    }
+    
+    .statLabel {
+      color: var(--success-dark);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+  }
+}
+
+.availableNotice {
+  background: linear-gradient(135deg, var(--success-light), #ecfdf5);
+  border: 1px solid #a7f3d0;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  .noticeIcon {
+    color: var(--success-color);
+    flex-shrink: 0;
+  }
+  
+  .noticeContent {
+    h3 {
+      color: var(--success-dark);
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    p {
+      color: var(--success-dark);
+      margin: 0;
+      opacity: 0.8;
+    }
+  }
+}
+
+.certificatesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.certificateCard {
+  background-color: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  border: 1px solid #f3f4f6;
+  
+  &.issued {
+    border-color: #a7f3d0;
+    
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 20px rgba(16, 185, 129, 0.15);
+      border-color: var(--success-color);
+    }
+  }
+  
+  .certificateHeader {
+    position: relative;
+    height: 8px;
+    
+    .certificateColorBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+    }
+  }
+  
+  .certificateBody {
+    padding: 1.5rem;
+    
+    .certificateTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .certificateCategory {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background-color: #f3f4f6;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--primary-color);
+    }
+    
+    .certificateStatus {
+      &.issued {
+        background-color: var(--success-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+    }
+    
+    h3 {
+      color: #111827;
+      margin-bottom: 1.25rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    
+    .certificateDetail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      
+      .detailLabel {
+        color: var(--light-text);
+      }
+      
+      .detailValue {
+        font-weight: 500;
+        color: #4b5563;
+      }
+    }
+    
+    .certificateActions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      border-top: 1px solid #f3f4f6;
+      padding-top: 1rem;
+      gap: 1rem;
+      
+      .btnLink {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        
+        &:hover {
+          color: var(--gradient-start);
+          transform: translateY(-2px);
+        }
+        
+        .actionIcon {
+          opacity: 0.8;
+        }
+      }
+      
+      .btn-claim {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        .claimIcon {
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  
+  .emptyIcon {
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+  }
+  
+  h3 {
+    color: #374151;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--light-text);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

@@ -25,6 +25,11 @@ import Forum from '../pages/Forum/forum';
 import Login from '../pages/Login/login';
 import Register from '../pages/Register/register';
 import CertificateLayoutEditor from '../pages/Admin/CertificateLayoutEditor/CertificateLayoutEditor';
+import WelcomePage from '../pages/Welcome/welcome';
+import OnboardingPage from '../pages/Welcome/Onboarding';
+import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
+import ClaimCertificate from '../pages/ClaimCertificate/claim-certificate';
+
 
 const AppRoute = () => {
   return (
@@ -34,10 +39,16 @@ const AppRoute = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/" element={<Home />} />
       <Route path="/my-certificates" element={<MyCertificates />} />
+      <Route path="/claim-certificate" element={<ClaimCertificate />} />
       <Route path="/certificate-details/:id" element={<CertificatesDetails />} />
       <Route path="/forum" element={<Forum />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/verify-certificate" element={<VerifyCertificate />} />
+      <Route path="/welcome" element={<WelcomePage />} />
+      <Route path="/onboarding" element={<OnboardingPage />} />
+      <Route path="/connect-wallet" element={<ConnectWalletPage />} />
+      <Route path="/" element={<WelcomePage />} />
+
 
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
