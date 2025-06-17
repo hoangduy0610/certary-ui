@@ -362,7 +362,7 @@ const CertificateEditor = () => {
         </section>
 
         <section>
-          <h5>🎨 Format</h5>
+          <h5>Format</h5>
           <div className="format-group">
             <label>Text Color</label>
             <ColorPicker value={selectedColor} onChange={(c) => changeTextColor(c.toHexString())} />
@@ -391,7 +391,7 @@ const CertificateEditor = () => {
         </section>
 
         <section>
-          <h5>📌 Placeholders</h5>
+          <h5>Placeholders</h5>
           <PlaceholderButtonGroup buttons={buttons} />
         </section>
       </aside>
