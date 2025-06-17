@@ -46,8 +46,8 @@ const LoginForm: React.FC = () => {
       localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(response.info || {}))
       console.log("Đăng nhập thành công:", response)
       getUserInfo();
-      // Chuyển hướng về trang chủ
-      navigate("/")
+      // Chuyển hướng về trang Welcome
+      navigate("/welcome")
     } catch (err: any) {
       setError(err.message || "Đăng nhập thất bại")
     } finally {
