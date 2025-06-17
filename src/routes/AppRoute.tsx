@@ -51,16 +51,7 @@ const AppRoute = () => {
 
         {/* Custom Certificate Routes */}
         <Route path="custom-certificates" element={<CertificatesCustom />} />
-        <Route
-          path="custom-certificates/editor/:id"
-          element={
-            <CertificateEditor
-              template={{} as any} // TODO: Replace with actual template data or fetch logic and type
-              onSave={() => { }} // Replace with actual save handler
-              onCancel={() => { }} // Replace with actual cancel handler
-            />
-          }
-        />
+        <Route path="custom-certificates/editor/:id" element={<CertificateEditor />} />
         <Route
           path="custom-certificates/preview/:id"
           element={

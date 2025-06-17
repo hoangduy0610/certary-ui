@@ -2,7 +2,9 @@ import { ArrowDownOutlined, ArrowUpOutlined, BorderOutlined, ClearOutlined, Copy
 import { Button, ColorPicker, Modal, Select, Space, Tooltip, Upload } from 'antd';
 import * as fabric from 'fabric';
 import { useEffect, useRef, useState } from 'react';
-import { PlaceholderButtonGroup } from './PlaceholderButtonGroup';
+import { PlaceholderButtonGroup } from '../CustomCertificate/PlaceholderButtonGroup';
+
+
 
 const CertificateLayoutEditor = () => {
     const canvasRef = useRef(null);

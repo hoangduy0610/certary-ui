@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Plus, Edit, Copy, Trash2, Eye, Award, Users, FileText } from "lucide-react"
 import CertificateEditor from "./certificate-editor"
 import CertificatePreview from "./certificate-preview"
-import AdminHeader from "../../../components/AdminHeader/adminHeader";
+import AdminHeader from "../../../components/AdminHeader/adminHeader"
 import "./certificate-custom.scss"
 
 interface CertificateTemplate {
@@ -16,6 +16,16 @@ interface CertificateTemplate {
   status: "active" | "draft"
   elements: any[]
 }
+
+// Khai báo props cho CertificateEditor để ép kiểu rõ ràng
+type CertificateEditorProps = {
+  template: CertificateTemplate
+  onSave: (template: CertificateTemplate) => void
+  onCancel: () => void
+}
+
+// Ép kiểu component
+const TypedCertificateEditor = CertificateEditor as React.FC<CertificateEditorProps>
 
 export default function CertificateManagement() {
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -117,8 +127,9 @@ export default function CertificateManagement() {
   }
 
   return (
-      <div className="certificate-management">
-        <AdminHeader />
+    <div className="certificate-management">
+      <AdminHeader />
+
       <div className="certificate-management__header">
         <div className="certificate-management__header-content">
           <div className="certificate-management__title-section">
@@ -127,7 +138,8 @@ export default function CertificateManagement() {
               Create and manage certificate templates for your organization
             </p>
           </div>
-          <div className="certificate-management__tabs">
+
+          {/* <div className="certificate-management__tabs">
             <div className="tabs-list">
               <button
                 className={`tabs-trigger ${activeTab === "dashboard" ? "tabs-trigger--active" : ""}`}
@@ -151,14 +163,13 @@ export default function CertificateManagement() {
                 Preview
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       <div className="certificate-management__content">
         {activeTab === "dashboard" && (
           <div className="dashboard">
-            {/* Stats Cards */}
             <div className="dashboard__stats">
               <div className="stats-card">
                 <div className="stats-card__header">
@@ -190,7 +201,6 @@ export default function CertificateManagement() {
               </div>
             </div>
 
-            {/* Templates Management */}
             <div className="dashboard__templates-section">
               <div className="dashboard__section-header">
                 <div>
@@ -202,6 +212,7 @@ export default function CertificateManagement() {
                   New Template
                 </button>
               </div>
+
               <div className="dashboard__templates-grid">
                 {templates.map((template) => (
                   <div key={template.id} className="template-card">
@@ -216,6 +227,7 @@ export default function CertificateManagement() {
                       <p className="template-card__description">{template.description}</p>
                       <p className="template-card__date">Cập nhật: {template.lastModified}</p>
                     </div>
+
                     <div className="template-card__actions">
                       <button onClick={() => handleEditTemplate(template)} className="template-card__primary-action">
                         <Edit className="icon" />
@@ -242,7 +254,7 @@ export default function CertificateManagement() {
         )}
 
         {activeTab === "editor" && selectedTemplate && (
-          <CertificateEditor
+          <TypedCertificateEditor
             template={selectedTemplate}
             onSave={handleSaveTemplate}
             onCancel={() => setActiveTab("dashboard")}
@@ -253,9 +265,7 @@ export default function CertificateManagement() {
           <CertificatePreview
             template={selectedTemplate}
             onBack={() => setActiveTab("dashboard")}
-            onEdit={() => {
-              setActiveTab("editor")
-            }}
+            onEdit={() => setActiveTab("editor")}
           />
         )}
       </div>
