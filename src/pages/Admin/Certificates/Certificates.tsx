@@ -9,6 +9,7 @@ import { Organization } from '../../../services/organizationsAPI';
 import { User } from '../../../services/userAPI';
 import './Certificates.scss';
 import FormCertificate from './FormCertificate';
+import { handleDownloadCertificate } from '../../../utils/file';
 
 const CertificatesPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -60,22 +61,6 @@ const CertificatesPage: React.FC = () => {
       messageApi.error('Error saving certificate data');
     }
   };
-
-  const handleDownloadCertificate = async (certificate: Certificate) => {
-    try {
-      const response = await CertificateAPI.download(certificate.id);
-      const blob = new Blob([response], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${certificate.certificateId}.png`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      messageApi.error('Error downloading certificate');
-    }
-  }
 
   const handleEditCertificate = (certificate: Certificate) => {
     setEditingCertificate(certificate);
@@ -216,7 +201,7 @@ const CertificatesPage: React.FC = () => {
         <Space size="middle">
           <Tooltip title="Download Certificate">
             <Button variant="outlined" color="primary" onClick={() => {
-              handleDownloadCertificate(record);
+              handleDownloadCertificate(record, messageApi);
             }}>
               <DownloadOutlined />
             </Button>

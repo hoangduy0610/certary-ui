@@ -3,7 +3,8 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Certificate, CertificateAPI } from "../../services/certificateAPI"
 import "./certificate-details.scss"
-import { Tag } from "antd"
+import { Tag, message } from "antd"
+import { handleDownloadCertificate } from "../../utils/file"
 
 interface CertificateDetailProps {
   onClose?: () => void
@@ -13,6 +14,7 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
   const { id: certificateId } = useParams();
   const [activeTab, setActiveTab] = useState("overview")
   const [cert, setCert] = useState<Certificate>();
+  const [messageApi, contextHolder] = message.useMessage()
   const navigate = useNavigate()
 
   const fetchCertificate = async (id: string) => {
@@ -73,19 +75,38 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
   const [color1, color2] = generateGradient()
   const gradient = `linear-gradient(135deg, ${color1}, ${color2})`
 
-  const handleDownload = () => {
-    // Implement download functionality
-    console.log("Downloading certificate...")
+  const handleDownload = async () => {
+    if (!cert) {
+      messageApi.error("Certificate data is not available")
+      return
+    }
+    await handleDownloadCertificate(cert, messageApi)
   }
 
   const handleShare = () => {
-    // Implement share functionality
-    console.log("Sharing certificate...")
+    if (!cert) {
+      messageApi.error("Certificate data is not available")
+      return
+    }
+    const shareData = {
+      title: `Certificate: ${cert.title}`,
+      text: `Check out my certificate titled "${cert.title}" issued by ${cert.issuer?.name}.`,
+      url: window.location.href,
+    }
+
+    // Copy to clipboard and show success message
+    navigator.clipboard.writeText(shareData.url).then(() => {
+      messageApi.success("Certificate details copied to clipboard!")
+    }).catch((error) => {
+      console.error("Error copying to clipboard:", error)
+      messageApi.error("Failed to copy certificate details")
+    });
   }
 
 
   return (
     <div className="certificateDetailOverlay">
+      {contextHolder}
       <div className="certificateDetailModal">
         <div className="modalHeader">
           <button className="closeButton" onClick={handleClose}>
@@ -252,20 +273,20 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
                     <div className="detailsList">
                       <div className="detailItem">
                         <span className="label">Certificate Type</span>
-                        <span className="value">Professional Certification</span>
+                        <span className="value">{cert?.certificateType.name}</span>
                       </div>
                       <div className="detailItem">
                         <span className="label">Duration</span>
-                        <span className="value">2 Years</span>
+                        <span className="value">{cert?.expiredAt ? moment(cert?.expiredAt).diff(moment(cert?.createdAt), 'days') + ' days' : 'No Expiration'}</span>
                       </div>
-                      <div className="detailItem">
+                      {/* <div className="detailItem">
                         <span className="label">Level</span>
                         <span className="value">Intermediate</span>
                       </div>
                       <div className="detailItem">
                         <span className="label">CPE Credits</span>
                         <span className="value">40 Hours</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   {/* <div className="section">

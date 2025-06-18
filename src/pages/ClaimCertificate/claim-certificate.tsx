@@ -66,12 +66,14 @@ export default function ClaimCertificate() {
     return matchesSearch && matchesFilter
   })
 
-  const handleClaimCertificate = async (certId: string, certTitle: string) => {
-    if (window.confirm(`Are you sure you want to claim "${certTitle}"?`)) {
+  const smartContractClaimCertificate = async (certificateId: string) => {
+    // TODO: improve later
+  }
+
+  const handleClaimCertificate = async (cert: Certificate) => {
+    if (window.confirm(`Are you sure you want to claim "${cert.title}"?`)) {
       try {
-        // Here you would implement the actual claim logic
-        // For example: await CertificateAPI.claimCertificate(certId)
-        alert(`Successfully claimed: ${certTitle}`)
+        await smartContractClaimCertificate(cert.certificateId || '')
 
         // Refresh the list after claiming
         await fetchIssuedCertificates()
@@ -255,7 +257,7 @@ export default function ClaimCertificate() {
                       </svg>
                       View Details
                     </button>
-                    <button className="btn btn-claim" onClick={() => handleClaimCertificate(String(cert.id), cert.title)}>
+                    <button className="btn btn-claim" onClick={() => handleClaimCertificate(cert)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
