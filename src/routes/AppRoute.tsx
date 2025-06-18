@@ -29,6 +29,7 @@ import WelcomePage from '../pages/Welcome/welcome';
 import OnboardingPage from '../pages/Welcome/Onboarding';
 import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
 import ClaimCertificate from '../pages/ClaimCertificate/claim-certificate';
+import IssuerRegister from '../pages/IssuerRegister/issuer-register';
 
 
 const AppRoute = () => {
@@ -37,6 +38,7 @@ const AppRoute = () => {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/issuer-register" element={<IssuerRegister />} />
       <Route path="/" element={<Home />} />
       <Route path="/my-certificates" element={<MyCertificates />} />
       <Route path="/claim-certificate" element={<ClaimCertificate />} />

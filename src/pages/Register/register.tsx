@@ -9,6 +9,7 @@ declare global {
     ethereum?: any;
   }
 }
+
 interface RegisterFormData {
   email: string
   password: string
@@ -18,7 +19,7 @@ interface RegisterFormData {
 }
 
 const RegisterForm: React.FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage()
   const [formData, setFormData] = useState<RegisterFormData>({
     email: "",
     password: "",
@@ -49,9 +50,9 @@ const RegisterForm: React.FC = () => {
 
     try {
       const response = await authAPI.register(formData)
-      console.log("Đăng ký thành công:", response)
+      console.log("Registration successful:", response)
 
-      setSuccessMessage("Đăng ký thành công!")
+      setSuccessMessage("Registration successful!")
       setFormData({
         email: "",
         password: "",
@@ -60,32 +61,29 @@ const RegisterForm: React.FC = () => {
         walletAddress: "",
       })
     } catch (err: any) {
-      setError(err.message || "Đăng ký thất bại")
+      setError(err.message || "Registration failed")
     } finally {
       setLoading(false)
     }
   }
 
   const handleConnectMetamask = async () => {
-    // Check if MetaMask is installed
     if (!window.ethereum) {
-      await messageApi.error('Please install MetaMask to use this feature.');
+      await messageApi.error("Please install MetaMask to use this feature.")
+      return
     }
 
     try {
-      // Request authorization from MetaMask
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      const walletAddress = accounts[0]
 
-      // Retrieve the first account address
-      const walletAddress = accounts[0];
-      // Display the wallet address in the input field
       setFormData((prev) => ({
         ...prev,
         walletAddress: walletAddress,
-      }));
-      await messageApi.success('MetaMask connected successfully!');
+      }))
+      await messageApi.success("MetaMask connected successfully!")
     } catch (error) {
-      await messageApi.error('Authorization failed. Please try again.');
+      await messageApi.error("Authorization failed. Please try again.")
     }
   }
 
@@ -96,8 +94,8 @@ const RegisterForm: React.FC = () => {
         <div className="register-card">
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-header">
-              <h1>Đăng ký</h1>
-              <p>Tạo tài khoản mới để bắt đầu</p>
+              <h1>Register</h1>
+              <p>Create a new account to get started</p>
             </div>
 
             {error && <div className="error-message">{error}</div>}
@@ -105,7 +103,7 @@ const RegisterForm: React.FC = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="firstName">Họ</label>
+                <label htmlFor="firstName">First Name</label>
                 <input
                   type="text"
                   id="firstName"
@@ -118,7 +116,7 @@ const RegisterForm: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="lastName">Tên</label>
+                <label htmlFor="lastName">Last Name</label>
                 <input
                   type="text"
                   id="lastName"
@@ -145,20 +143,20 @@ const RegisterForm: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Mật khẩu</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Nhập mật khẩu"
+                placeholder="Enter your password"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="walletAddress">Địa chỉ ví</label>
+              <label htmlFor="walletAddress">Wallet Address</label>
               <input
                 type="text"
                 id="walletAddress"
@@ -172,9 +170,11 @@ const RegisterForm: React.FC = () => {
               />
               <div className="d-flex flex-column flex-md-row gap-2 mt-2">
                 <Button onClick={handleConnectMetamask} variant="outlined" color="default" size="large" className="w-100">
-                  <img height="30"
+                  <img
+                    height="30"
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png"
-                    alt="Connect with MetaMask" />
+                    alt="Connect with MetaMask"
+                  />
                   Connect with MetaMask
                 </Button>
               </div>
@@ -184,22 +184,22 @@ const RegisterForm: React.FC = () => {
               <label className="checkbox-container">
                 <input type="checkbox" required />
                 <span className="checkmark"></span>
-                Tôi đồng ý với&nbsp;
+                I agree to the&nbsp;
                 <a href="#terms" className="terms-link">
-                  Điều khoản sử dụng
+                  Terms of Use
                 </a>
               </label>
             </div>
 
             <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? "Đang đăng ký..." : "Đăng ký"}
+              {loading ? "Registering..." : "Register"}
             </button>
 
             <div className="form-footer">
               <p>
-                Đã có tài khoản?{" "}
+                Already have an account?{" "}
                 <a href="/login" className="login-link">
-                  Đăng nhập ngay
+                  Log in now
                 </a>
               </p>
             </div>

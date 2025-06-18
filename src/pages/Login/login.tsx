@@ -21,7 +21,7 @@ const LoginForm: React.FC = () => {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { getUserInfo } = useUserInfo();
+  const { getUserInfo } = useUserInfo()
 
   const navigate = useNavigate()
 
@@ -44,12 +44,12 @@ const LoginForm: React.FC = () => {
       const response = await authAPI.signin(formData)
       localStorage.setItem(StorageKeys.AUTH_TOKEN, response.token || "")
       localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(response.info || {}))
-      console.log("Đăng nhập thành công:", response)
-      getUserInfo();
-      // Chuyển hướng về trang Welcome
+      console.log("Login successful:", response)
+      getUserInfo()
+      // Redirect to Welcome page
       navigate("/welcome")
     } catch (err: any) {
-      setError(err.message || "Đăng nhập thất bại")
+      setError(err.message || "Login failed")
     } finally {
       setLoading(false)
     }
@@ -60,8 +60,8 @@ const LoginForm: React.FC = () => {
       <div className="login-card">
         <Form className="login-form">
           <div className="form-header">
-            <h1>Đăng nhập</h1>
-            <p>Chào mừng bạn quay trở lại</p>
+            <h1>Login</h1>
+            <p>Welcome back</p>
           </div>
 
           {error && <div className="error-message">{error}</div>}
@@ -80,14 +80,14 @@ const LoginForm: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Mật khẩu</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Nhập mật khẩu"
+              placeholder="Enter your password"
               required
             />
           </div>
@@ -96,22 +96,29 @@ const LoginForm: React.FC = () => {
             <label className="checkbox-container">
               <input type="checkbox" />
               <span className="checkmark"></span>
-              Ghi nhớ đăng nhập
+              Remember me
             </label>
             <a href="#forgot" className="forgot-link">
-              Quên mật khẩu?
+              Forgot password?
             </a>
           </div>
 
           <button type="button" onClick={handleSubmit} className="submit-button" disabled={loading}>
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <div className="form-footer">
             <p>
-              Chưa có tài khoản?{" "}
+              Don't have an account?{" "}
               <a href="/register" className="register-link">
-                Đăng ký ngay
+                Register now
+              </a>
+            </p>
+
+            <p>
+              Become an issuer?{" "}
+              <a href="/issuer-register" className="register-link">
+                Register as issuer
               </a>
             </p>
           </div>
