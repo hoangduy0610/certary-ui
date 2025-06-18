@@ -1,29 +1,37 @@
-import { ArrowDownOutlined, ArrowUpOutlined, BorderOutlined, ClearOutlined, CopyOutlined, DeleteOutlined, EyeOutlined, FontSizeOutlined, HarmonyOSOutlined, LineOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, ColorPicker, Modal, Select, Space, Tooltip, Upload } from 'antd';
+import { ArrowDownOutlined, ArrowUpOutlined, BackwardOutlined, BorderOutlined, ClearOutlined, CopyOutlined, DeleteOutlined, EyeOutlined, FontSizeOutlined, HarmonyOSOutlined, LineOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, ColorPicker, Input, Modal, Select, Upload } from 'antd';
 import * as fabric from 'fabric';
-import { useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { CreateCertificateTypeDto } from '../../../services/certificateTypeAPI';
 import { PlaceholderButtonGroup } from './PlaceholderButtonGroup';
 import './certificate-editor.scss';
 
+type CertificateEditorProps = {
+  template: CreateCertificateTypeDto
+  onSave: (template: CreateCertificateTypeDto) => void
+  onCancel: () => void
+}
 
-
-const CertificateEditor = () => {
+const CertificateEditor = (props: CertificateEditorProps): ReactElement<CertificateEditorProps> => {
+  const { template, onSave, onCancel } = props;
   const canvasRef = useRef(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
   const undoStack = useRef<string[]>([]);
   const redoStack = useRef<string[]>([]);
 
-  const [templateId, setTemplateId] = useState(1);
+  const [rendered, setRendered] = useState(false);
   const [selectedColor, setSelectedColor] = useState('#000000');
   const [fontSize, setFontSize] = useState(24);
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
   const [showPreview, setShowPreview] = useState(false);
-  const [tempLayout, setTempLayout] = useState<any>(null);
+  const [name, setName] = useState(template.name || '');
+  const [description, setDescription] = useState(template.description || '');
 
   const buttons = [
     { title: 'Recipient Name', onPress: () => addText('{{recipientName}}') },
-    { title: 'Date', onPress: () => addText('{{date}}') },
+    { title: 'Issue Date', onPress: () => addText('{{createdAt}}') },
     { title: 'Course Name', onPress: () => addText('{{courseName}}') },
+    { title: 'Expiration Date', onPress: () => addText('{{expiredAt}}') },
   ];
 
   const saveToUndo = () => {
@@ -166,6 +174,8 @@ const CertificateEditor = () => {
       width: inpText.length * 12,
       fontSize,
       fill: selectedColor,
+      fontFamily: 'Arial',
+      textAlign: 'center',
     });
     fabricRef.current?.add(textbox);
   };
@@ -229,6 +239,13 @@ const CertificateEditor = () => {
   const exportLayout = () => {
     const layout = fabricRef.current?.toJSON();
     console.log('Exported layout:', layout);
+    if (layout) {
+      onSave({
+        name: name,
+        description: description,
+        layoutJson: JSON.parse(JSON.stringify(layout))
+      });
+    }
   };
 
   const clearCanvas = () => {
@@ -292,6 +309,18 @@ const CertificateEditor = () => {
   }, [backgroundColor]);
 
   useEffect(() => {
+    if (fabricRef.current && template.layoutJson) {
+      if (rendered) return;
+      setRendered(true);
+      setTimeout(() => {
+        fabricRef.current?.loadFromJSON(JSON.stringify(template.layoutJson), () => {
+          fabricRef.current?.requestRenderAll();
+        });
+      }, 500);
+    }
+  }, [fabricRef.current, template]);
+
+  useEffect(() => {
     const handlePaste = (e: Event) => {
       const clipboardEvent = e as ClipboardEvent;
       const items = clipboardEvent.clipboardData?.items;
@@ -332,8 +361,30 @@ const CertificateEditor = () => {
       {/* Sidebar trái */}
       <aside className="sidebar">
         <section>
+          <h5>Template Information</h5>
+          <label>Template Name</label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter template name"
+            size="small"
+            style={{ marginBottom: '10px' }}
+          />
+          <label>Description</label>
+          <Input.TextArea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter template description"
+            size="small"
+            rows={3}
+            style={{ marginBottom: '10px' }}
+          />
+
+          <hr />
+
           <h5>Actions</h5>
           <div className="button-grid">
+            <Button icon={<BackwardOutlined />} size="small" color='primary' variant='outlined' onClick={onCancel}>Back</Button>
             <Button icon={<SaveOutlined />} size="small" onClick={exportLayout}>Save</Button>
             <Button icon={<EyeOutlined />} size="small" onClick={() => setShowPreview(true)}>Preview</Button>
             <Button icon={<ClearOutlined />} size="small" onClick={clearCanvas}>Clear</Button>
@@ -351,7 +402,7 @@ const CertificateEditor = () => {
         </section>
 
         <section>
-          <h5>Add</h5>
+          <h5>Graphics</h5>
           <Button type="text" icon={<FontSizeOutlined />} onClick={() => addText()}>Text</Button>
           <Button type="text" icon={<BorderOutlined />} onClick={() => addShape("rect")}>Rectangle</Button>
           <Button type="text" icon={<HarmonyOSOutlined />} onClick={() => addShape("circle")}>Circle</Button>

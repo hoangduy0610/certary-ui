@@ -1,46 +1,47 @@
-import axios from 'axios';
+import MainApiRequest from './MainApiRequest';
 
-const API_BASE = '/api/certificate-types'; // hoặc đường dẫn thật nếu bạn đã có
+const API_BASE = '/certificate-types';
 
 export interface CertificateType {
-  id: string;
+  id: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date | null;
   name: string;
-  code: string;
-  description?: string;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
+  description: string;
+  layoutJson: any;
+  organizationId: number;
 }
 
 export interface CreateCertificateTypeDto {
+  id?: number;
   name: string;
-  code: string;
-  description?: string;
-  active: boolean;
+  description: string;
+  layoutJson?: any;
 }
 
 export const CertificateTypeAPI = {
   getAll: async (): Promise<CertificateType[]> => {
-    const res = await axios.get(API_BASE);
+    const res = await MainApiRequest.get(API_BASE);
     return res.data;
   },
 
-  getById: async (id: string): Promise<CertificateType> => {
-    const res = await axios.get(`${API_BASE}/${id}`);
+  getById: async (id: number): Promise<CertificateType> => {
+    const res = await MainApiRequest.get(`${API_BASE}/${id}`);
     return res.data;
   },
 
   create: async (data: CreateCertificateTypeDto): Promise<CertificateType> => {
-    const res = await axios.post(API_BASE, data);
+    const res = await MainApiRequest.post(API_BASE, data);
     return res.data;
   },
 
-  update: async (id: string, data: Partial<CreateCertificateTypeDto>): Promise<CertificateType> => {
-    const res = await axios.put(`${API_BASE}/${id}`, data);
+  update: async (id: number, data: Partial<CreateCertificateTypeDto>): Promise<CertificateType> => {
+    const res = await MainApiRequest.patch(`${API_BASE}/${id}`, data);
     return res.data;
   },
 
-  delete: async (id: string): Promise<void> => {
-    await axios.delete(`${API_BASE}/${id}`);
+  delete: async (id: number): Promise<void> => {
+    await MainApiRequest.delete(`${API_BASE}/${id}`);
   },
 };

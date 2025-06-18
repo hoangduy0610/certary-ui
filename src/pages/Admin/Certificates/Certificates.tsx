@@ -1,21 +1,23 @@
-import { CheckCircleOutlined, DeleteOutlined, EditOutlined, ExportOutlined, FilterOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons';
-import { Button, Col, message, Popconfirm, Popover, Row, Space, Table, Tag } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, DownloadOutlined, EditOutlined, ExportOutlined, FilterOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons';
+import { Button, Col, Form, Input, Modal, Popconfirm, Row, Space, Table, Tag, Tooltip, message } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../../../components/AdminHeader/adminHeader';
 import { Certificate, CertificateAPI, CreateCertificateDto } from '../../../services/certificateAPI';
+import { Organization } from '../../../services/organizationsAPI';
+import { User } from '../../../services/userAPI';
 import './Certificates.scss';
 import FormCertificate from './FormCertificate';
-import { render } from '@testing-library/react';
-import { Organization } from '../../../services/organizationsAPI';
-import moment from 'moment';
-import { User } from '../../../services/userAPI';
 
 const CertificatesPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [formLoading, setFormLoading] = useState(false);
   const [certificateFormVisible, setCertificateFormVisible] = useState(false);
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
+  const [rejectingCertificate, setRejectingCertificate] = useState<Certificate | null>(null);
+  const [formRejectLoading, setFormRejectLoading] = useState(false);
+  const [openRejectModal, setOpenRejectModal] = useState(false);
   const [data, setData] = useState<Certificate[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const navigate = useNavigate();
@@ -59,16 +61,60 @@ const CertificatesPage: React.FC = () => {
     }
   };
 
+  const handleDownloadCertificate = async (certificate: Certificate) => {
+    try {
+      const response = await CertificateAPI.download(certificate.id);
+      const blob = new Blob([response], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${certificate.certificateId}.png`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      messageApi.error('Error downloading certificate');
+    }
+  }
+
   const handleEditCertificate = (certificate: Certificate) => {
     setEditingCertificate(certificate);
     setCertificateFormVisible(true);
   }
 
+  const handleApproveCert = async (certificate: Certificate) => {
+    try {
+      await CertificateAPI.approve(certificate.id);
+      messageApi.success('Certificate issued successfully');
+      fetchCertificates(); // Refresh the certificate list
+    } catch (error) {
+      messageApi.error('Error issuing certificate');
+    }
+  }
+
+  const handleOpenRejectModal = (certificate: Certificate) => {
+    setRejectingCertificate(certificate);
+    setOpenRejectModal(true);
+  };
+
+  const handleRejectCert = async (certificate: Certificate, reason?: string) => {
+    setFormRejectLoading(true);
+    try {
+      await CertificateAPI.reject(certificate.id, reason || '');
+      messageApi.success('Certificate rejected successfully');
+      setOpenRejectModal(false);
+      fetchCertificates(); // Refresh the certificate list
+    } catch (error) {
+      messageApi.error('Error rejecting certificate');
+    }
+    setFormRejectLoading(false);
+  };
+
   const mapStatusColor = (status: string): string => {
     switch (status) {
       case 'draft':
         return 'blue';
-      case 'waiting_for_id':
+      case 'rejected':
         return 'orange';
       case 'issued':
         return 'green';
@@ -82,13 +128,13 @@ const CertificatesPage: React.FC = () => {
   };
 
   const columns = [
-    {
-      title: '',
-      dataIndex: 'checkbox',
-      key: 'checkbox',
-      render: () => null,
-      width: 50,
-    },
+    // {
+    //   title: '',
+    //   dataIndex: 'checkbox',
+    //   key: 'checkbox',
+    //   render: () => null,
+    //   width: 50,
+    // },
     {
       title: 'Token ID',
       dataIndex: 'tokenId',
@@ -114,7 +160,7 @@ const CertificatesPage: React.FC = () => {
       dataIndex: 'owner',
       key: 'owner',
       render: (owner: User) => {
-        return <Tag color={owner ? 'green' : 'red'}>{owner ? `${owner.firstName} ${owner.lastName}` : "NOT CLAIMED"}</Tag>;
+        return <Tag color={owner ? 'green' : 'red'}>{owner ? `${owner.firstName} ${owner.lastName}` : "NOT REGISTED"}</Tag>;
       }
     },
     {
@@ -132,7 +178,7 @@ const CertificatesPage: React.FC = () => {
       render: (status: string) => {
         const statusMap: Record<string, string> = {
           draft: 'Draft',
-          waiting_for_id: 'Waiting for ID',
+          rejected: 'Rejected',
           issued: 'Issued',
           claimed: 'Claimed',
           revoked: 'Revoked'
@@ -141,6 +187,11 @@ const CertificatesPage: React.FC = () => {
           {statusMap[status] || 'Unknown Status'}
         </Tag>;
       }
+    },
+    {
+      title: 'Remark',
+      dataIndex: 'remark',
+      key: 'remark'
     },
     {
       title: 'Issue Date',
@@ -152,10 +203,10 @@ const CertificatesPage: React.FC = () => {
     },
     {
       title: 'Expiry Date',
-      dataIndex: 'expiryDate',
-      key: 'expiryDate',
-      render: (_: any, record: Certificate) => {
-        return moment(record.createdAt).add(2, 'year').format('YYYY-MM-DD');
+      dataIndex: 'expiredAt',
+      key: 'expiredAt',
+      render: (expiredAt: Date) => {
+        return moment(expiredAt).format('YYYY-MM-DD');
       }
     },
     {
@@ -163,29 +214,63 @@ const CertificatesPage: React.FC = () => {
       key: 'actions',
       render: (_: any, record: Certificate) => (
         <Space size="middle">
-          {/* <Button variant="outlined" color="primary" onClick={() => {
-            handleEditCertificate(record);
-          }}>
-            <EditOutlined />
-          </Button> */}
+          <Tooltip title="Download Certificate">
+            <Button variant="outlined" color="primary" onClick={() => {
+              handleDownloadCertificate(record);
+            }}>
+              <DownloadOutlined />
+            </Button>
+          </Tooltip>
           {
-            record.status !== 'revoked' && (
-              <Popconfirm
-                title="Are you sure you want to revoke this certificate?"
-                onConfirm={async () => {
-                  try {
-                    await CertificateAPI.revoke(record.id);
-                    messageApi.success('Certificate revoke successfully');
-                    fetchCertificates(); // Refresh the certificate list
-                  } catch (error) {
-                    messageApi.error('Error revoking certificate');
-                  }
-                }}
-              >
-                <Button variant="outlined" className="ms-2" danger>
-                  <StopOutlined />
-                </Button>
-              </Popconfirm>
+            (record.status === 'draft' || record.status === 'rejected') &&
+            <Tooltip title="Edit Certificate">
+              <Button variant="outlined" color="primary" onClick={() => {
+                handleEditCertificate(record);
+              }}>
+                <EditOutlined />
+              </Button>
+            </Tooltip>
+          }
+          {
+            (record.status === 'draft') &&
+            <Tooltip title="Approve Certificate">
+              <Button variant="outlined" color="green" onClick={() => {
+                handleApproveCert(record);
+              }}>
+                <CheckCircleOutlined />
+              </Button>
+            </Tooltip>
+          }
+          {
+            (record.status === 'draft') &&
+            <Tooltip title="Reject Certificate">
+              <Button variant="outlined" color="red" onClick={() => {
+                handleOpenRejectModal(record);
+              }}>
+                <CloseCircleOutlined />
+              </Button>
+            </Tooltip>
+          }
+          {
+            (record.status === 'issued' || record.status === 'claimed') && (
+              <Tooltip title="Revoke Certificate">
+                <Popconfirm
+                  title="Are you sure you want to revoke this certificate?"
+                  onConfirm={async () => {
+                    try {
+                      await CertificateAPI.revoke(record.id);
+                      messageApi.success('Certificate revoke successfully');
+                      fetchCertificates(); // Refresh the certificate list
+                    } catch (error) {
+                      messageApi.error('Error revoking certificate');
+                    }
+                  }}
+                >
+                  <Button variant="outlined" className="" danger>
+                    <StopOutlined />
+                  </Button>
+                </Popconfirm>
+              </Tooltip>
             )
           }
         </Space>
@@ -228,9 +313,9 @@ const CertificatesPage: React.FC = () => {
             </Col>
             <Col>
               <Space>
-                <Button icon={<CheckCircleOutlined />} onClick={handleVerify}>
+                {/* <Button icon={<CheckCircleOutlined />} onClick={handleVerify}>
                   Verify
-                </Button>
+                </Button> */}
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateCertificate}>
                   Add Certificate
                 </Button>
@@ -239,7 +324,7 @@ const CertificatesPage: React.FC = () => {
           </Row>
           <Table
             rowKey="id"
-            rowSelection={{ type: 'radio', ...rowSelection }}
+            // rowSelection={{ type: 'radio', ...rowSelection }}
             columns={columns}
             dataSource={data}
             className="certificates-table"
@@ -252,8 +337,34 @@ const CertificatesPage: React.FC = () => {
             initialValues={editingCertificate}
             loading={formLoading}
           />
+
+          <Modal
+            title="Reject Certificate"
+            open={openRejectModal}
+            footer={null}
+          >
+            <Form
+              layout="vertical"
+              onFinish={async (values) => {
+                await handleRejectCert(rejectingCertificate!, values.reason);
+              }}
+            >
+              <Form.Item
+                label="Reason for rejection"
+                name="reason"
+                rules={[{ required: true, message: 'Please provide a reason for rejection' }]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={formRejectLoading}>
+                  Reject Certificate
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
         </div>
-      </div>
+      </div >
     </>
   );
 };

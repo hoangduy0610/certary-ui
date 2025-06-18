@@ -333,16 +333,18 @@ const OrganizationsPage: React.FC = () => {
                 </Col>
               </Row>
 
-              <Form.Item
-                label="Admin Email"
-                name="adminEmail"
-                rules={[
-                  { required: true, message: "Please input admin email!" },
-                  { type: "email", message: "Please enter a valid email!" },
-                ]}
-              >
-                <Input placeholder="admin@organization.com" />
-              </Form.Item>
+              {!isEditMode && (
+                <Form.Item
+                  label="Admin Email"
+                  name="adminEmail"
+                  rules={[
+                    { required: true, message: "Please input admin email!" },
+                    { type: "email", message: "Please enter a valid email!" },
+                  ]}
+                >
+                  <Input placeholder="admin@organization.com" />
+                </Form.Item>
+              )}
 
               {!isEditMode && (
                 <Form.Item
@@ -371,9 +373,9 @@ const OrganizationsPage: React.FC = () => {
                 </Col>
               </Row>
 
-              <Form.Item label="Wallet Address" name="walletAddress">
+              {/* <Form.Item label="Wallet Address" name="walletAddress">
                 <Input placeholder="0x1234..." />
-              </Form.Item>
+              </Form.Item> */}
             </Form>
           </Modal>
         </div>

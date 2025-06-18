@@ -40,7 +40,7 @@ const CertificateTypePage: React.FC = () => {
     setFormVisible(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     try {
       await CertificateTypeAPI.delete(id);
       messageApi.success('Deleted successfully');
@@ -58,7 +58,7 @@ const CertificateTypePage: React.FC = () => {
         messageApi.success('Updated successfully');
       } else {
         // Ensure required fields are present before creating
-        if (!values.name || !values.code) {
+        if (!values.name) {
           messageApi.error('Name and Code are required');
           setLoading(false);
           return;

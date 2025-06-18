@@ -32,7 +32,7 @@ export default function MyCertificates() {
         return "#60a5fa" // Blue
       case "revoked":
         return "#f87171" // Red
-      case "waiting_for_id":
+      case "rejected":
         return "#fbbf24" // Yellow
       case "draft":
         return "#a78bfa" // Purple

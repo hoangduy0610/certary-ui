@@ -1,123 +1,113 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Edit, Copy, Trash2, Eye, Award, Users, FileText } from "lucide-react"
-import CertificateEditor from "./certificate-editor"
-import CertificatePreview from "./certificate-preview"
+import { Award, Copy, Edit, FileText, Plus, Trash2, Users } from "lucide-react"
+import moment from "moment"
+import { useEffect, useState } from "react"
 import AdminHeader from "../../../components/AdminHeader/adminHeader"
+import { CertificateType, CertificateTypeAPI, CreateCertificateTypeDto } from "../../../services/certificateTypeAPI"
 import "./certificate-custom.scss"
-
-interface CertificateTemplate {
-  id: string
-  name: string
-  type: string
-  description: string
-  lastModified: string
-  status: "active" | "draft"
-  elements: any[]
-}
-
-// Khai báo props cho CertificateEditor để ép kiểu rõ ràng
-type CertificateEditorProps = {
-  template: CertificateTemplate
-  onSave: (template: CertificateTemplate) => void
-  onCancel: () => void
-}
-
-// Ép kiểu component
-const TypedCertificateEditor = CertificateEditor as React.FC<CertificateEditorProps>
+import TypedCertificateEditor from "./certificate-editor"
 
 export default function CertificateManagement() {
   const [activeTab, setActiveTab] = useState("dashboard")
-  const [selectedTemplate, setSelectedTemplate] = useState<CertificateTemplate | null>(null)
-  const [templates, setTemplates] = useState<CertificateTemplate[]>([
-    {
-      id: "1",
-      name: "Chứng chỉ Hoàn thành Khóa học",
-      type: "completion",
-      description: "Template cho chứng chỉ hoàn thành khóa học",
-      lastModified: "2024-01-15",
-      status: "active",
-      elements: [],
-    },
-    {
-      id: "2",
-      name: "Chứng chỉ Tham gia Sự kiện",
-      type: "participation",
-      description: "Template cho chứng chỉ tham gia sự kiện",
-      lastModified: "2024-01-10",
-      status: "draft",
-      elements: [],
-    },
-    {
-      id: "3",
-      name: "Chứng chỉ Thành tích Xuất sắc",
-      type: "achievement",
-      description: "Template cho chứng chỉ thành tích xuất sắc",
-      lastModified: "2024-01-08",
-      status: "active",
-      elements: [],
-    },
-  ])
+  const [selectedTemplate, setSelectedTemplate] = useState<CreateCertificateTypeDto | null>(null)
+  const [templates, setTemplates] = useState<CertificateType[]>([])
 
-  const handleEditTemplate = (template: CertificateTemplate) => {
+  const fetchTypes = async () => {
+    const res = await CertificateTypeAPI.getAll();
+    if (!res) {
+      console.error("Failed to fetch certificate types");
+      return;
+    }
+    setTemplates(res);
+  }
+
+  useEffect(() => {
+    fetchTypes();
+  }, [])
+
+  const handleEditTemplate = (template: CertificateType) => {
     setSelectedTemplate(template)
     setActiveTab("editor")
   }
 
   const handleCreateNew = () => {
-    const newTemplate: CertificateTemplate = {
-      id: Date.now().toString(),
+    const newTemplate: CreateCertificateTypeDto = {
       name: "Template mới",
-      type: "completion",
       description: "Mô tả template",
-      lastModified: new Date().toISOString().split("T")[0],
-      status: "draft",
-      elements: [],
     }
     setSelectedTemplate(newTemplate)
     setActiveTab("editor")
   }
 
-  const handleSaveTemplate = (template: CertificateTemplate) => {
-    const updatedTemplates = templates.some((t) => t.id === template.id)
-      ? templates.map((t) => (t.id === template.id ? template : t))
-      : [...templates, template]
-
-    setTemplates(updatedTemplates)
-    setActiveTab("dashboard")
-  }
-
-  const handlePreview = (template: CertificateTemplate) => {
-    setSelectedTemplate(template)
-    setActiveTab("preview")
-  }
-
-  const handleDuplicate = (template: CertificateTemplate) => {
-    const duplicated = {
-      ...template,
-      id: Date.now().toString(),
-      name: `${template.name} (Copy)`,
-      status: "draft" as const,
-      lastModified: new Date().toISOString().split("T")[0],
+  const handleSaveTemplate = (template: CreateCertificateTypeDto) => {
+    if (selectedTemplate?.id) {
+      updateType(template)
+    } else {
+      createType(template)
     }
-    setTemplates([...templates, duplicated])
   }
 
-  const handleDelete = (templateId: string) => {
-    setTemplates(templates.filter((t) => t.id !== templateId))
-  }
+  // const handlePreview = (template: CertificateType) => {
+  //   setSelectedTemplate(template)
+  //   setActiveTab("preview")
+  // }
 
-  const getTypeLabel = (type: string) => {
-    const types = {
-      completion: "Hoàn thành",
-      participation: "Tham gia",
-      achievement: "Thành tích",
+  const handleDuplicate = (template: CertificateType) => {
+    const duplicated: CreateCertificateTypeDto = {
+      name: `Copy of ${template.name}`,
+      description: `Copy of ${template.description}`,
+      layoutJson: template.layoutJson,
     }
-    return types[type as keyof typeof types] || type
+    setSelectedTemplate(duplicated)
+    setActiveTab("editor")
   }
 
-  const getTypeColor = (type: string) => {
+  const handleDelete = async (templateId: number) => {
+    const confirmDelete = await window.confirm("Are you sure you want to delete this template?")
+    if (confirmDelete) {
+      try {
+        await CertificateTypeAPI.delete(templateId)
+        setTemplates(templates.filter((t) => t.id !== templateId))
+        alert("Template deleted successfully")
+      } catch (error) {
+        console.error("Failed to delete template:", error)
+        alert("Failed to delete template")
+      }
+    }
+  }
+
+  const createType = async (data: CreateCertificateTypeDto) => {
+    try {
+      const newTemplate = await CertificateTypeAPI.create(data)
+      setTemplates([...templates, newTemplate])
+      alert("Template created successfully")
+      setActiveTab("dashboard")
+    } catch (error) {
+      console.error("Failed to create template:", error)
+      alert("Failed to create template")
+    }
+  }
+
+  const updateType = async (data: CreateCertificateTypeDto) => {
+    if (!selectedTemplate?.id) return
+    try {
+      const updatedTemplate = await CertificateTypeAPI.update(selectedTemplate?.id, data)
+      setTemplates(templates.map((t) => (t.id === updatedTemplate.id ? updatedTemplate : t)))
+      alert("Template updated successfully")
+      setActiveTab("dashboard")
+    } catch (error) {
+      console.error("Failed to update template:", error)
+      alert("Failed to update template")
+    }
+  }
+
+  const getTypeLabel = (type?: string) => {
+    return "Certificate";
+  }
+
+  const getTypeColor = (type?: string) => {
+    return "badge--completion";
     const colors = {
       completion: "badge--completion",
       participation: "badge--participation",
@@ -183,21 +173,21 @@ export default function CertificateManagement() {
                   <h3 className="stats-card__title">Active Templates</h3>
                   <Award className="stats-card__icon" />
                 </div>
-                <div className="stats-card__value">{templates.filter((t) => t.status === "active").length}</div>
+                <div className="stats-card__value">{templates.length}</div>
               </div>
               <div className="stats-card">
                 <div className="stats-card__header">
                   <h3 className="stats-card__title">Draft Templates</h3>
                   <Edit className="stats-card__icon" />
                 </div>
-                <div className="stats-card__value">{templates.filter((t) => t.status === "draft").length}</div>
+                <div className="stats-card__value">0</div>
               </div>
               <div className="stats-card">
                 <div className="stats-card__header">
                   <h3 className="stats-card__title">Template Types</h3>
                   <Users className="stats-card__icon" />
                 </div>
-                <div className="stats-card__value">{new Set(templates.map((t) => t.type)).size}</div>
+                <div className="stats-card__value">1</div>
               </div>
             </div>
 
@@ -219,13 +209,14 @@ export default function CertificateManagement() {
                     <div className="template-card__header">
                       <h3 className="template-card__title">{template.name}</h3>
                       <div className="template-card__badges">
-                        <span className={`badge ${getTypeColor(template.type)}`}>{getTypeLabel(template.type)}</span>
-                        <span className={`badge ${template.status === "active" ? "badge--active" : "badge--draft"}`}>
-                          {template.status === "active" ? "Active" : "Draft"}
+                        <span className={`badge ${getTypeColor()}`}>{getTypeLabel()}</span>
+                        <span className={`badge ${true ? "badge--active" : "badge--draft"}`}>
+                          {/* {template.status === "active" ? "Active" : "Draft"} */}
+                          Active
                         </span>
                       </div>
                       <p className="template-card__description">{template.description}</p>
-                      <p className="template-card__date">Cập nhật: {template.lastModified}</p>
+                      <p className="template-card__date">Cập nhật: {moment(template.updatedAt).format("DD-MM-YYYY")}</p>
                     </div>
 
                     <div className="template-card__actions">
@@ -233,9 +224,9 @@ export default function CertificateManagement() {
                         <Edit className="icon" />
                         Edit
                       </button>
-                      <button onClick={() => handlePreview(template)} className="template-card__secondary-action">
+                      {/* <button onClick={() => handlePreview(template)} className="template-card__secondary-action">
                         <Eye className="icon" />
-                      </button>
+                      </button> */}
                       <button onClick={() => handleDuplicate(template)} className="template-card__secondary-action">
                         <Copy className="icon" />
                       </button>
@@ -261,13 +252,13 @@ export default function CertificateManagement() {
           />
         )}
 
-        {activeTab === "preview" && selectedTemplate && (
+        {/* {activeTab === "preview" && selectedTemplate && (
           <CertificatePreview
             template={selectedTemplate}
             onBack={() => setActiveTab("dashboard")}
             onEdit={() => setActiveTab("editor")}
           />
-        )}
+        )} */}
       </div>
     </div>
   )

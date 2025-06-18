@@ -56,14 +56,14 @@ const AppRoute = () => {
         <Route path="users" element={<Users />} />
         <Route path="certificates" element={<Certificates />} />
         <Route path="certificates/verify" element={<VerifyCertificate />} />
-        <Route path="certificate-types" element={<CertificateTypes />} />
+        {/* <Route path="certificate-types" element={<CertificateTypes />} /> */}
         <Route path="organizations" element={<Organizations />} />
         <Route path="layout" element={<CertificateLayoutEditor />} />
 
         {/* Custom Certificate Routes */}
         <Route path="custom-certificates" element={<CertificatesCustom />} />
-        <Route path="custom-certificates/editor/:id" element={<CertificateEditor />} />
-        <Route
+        {/* <Route path="custom-certificates/editor/:id" element={<CertificateEditor />} /> */}
+        {/* <Route
           path="custom-certificates/preview/:id"
           element={
             <CertificatePreview
@@ -72,7 +72,7 @@ const AppRoute = () => {
               onEdit={() => { }} // Replace with actual edit handler
             />
           }
-        />
+        /> */}
       </Route>
 
       {/* Fallback Route */}

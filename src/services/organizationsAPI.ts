@@ -8,7 +8,7 @@ export interface Organization {
   status: "active" | "pending" | "suspended"
   adminEmail?: string
   description?: string
-  walletAddress?: string
+  // walletAddress?: string
   logo?: string
   website?: string
   createdAt?: string
@@ -21,7 +21,7 @@ export interface CreateOrganizationData {
   adminPassword: string
   description?: string
   type: string
-  walletAddress?: string
+  // walletAddress?: string
   logo?: string
   website?: string
 }
@@ -30,7 +30,7 @@ export interface UpdateOrganizationData {
   name?: string
   description?: string
   type?: string
-  walletAddress?: string
+  // walletAddress?: string
   logo?: string
   website?: string
 }

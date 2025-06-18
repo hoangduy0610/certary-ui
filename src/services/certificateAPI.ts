@@ -1,5 +1,6 @@
 // src/api/CertificateApis.ts
 import MainApiRequest from "./MainApiRequest"
+import { CertificateType } from "./certificateTypeAPI"
 import { Organization } from "./organizationsAPI"
 import { User } from "./userAPI"
 
@@ -8,8 +9,7 @@ export interface Certificate {
     title: string
     description?: string
     recipientEmail: string
-    additionalData?: Record<string, any>
-    status: 'draft' | 'waiting_for_id' | 'issued' | 'claimed' | 'revoked'
+    status: 'draft' | 'rejected' | 'issued' | 'claimed' | 'revoked'
     createdAt: Date
     updatedAt: Date
     issuer?: Organization
@@ -17,17 +17,20 @@ export interface Certificate {
     certificateId?: string
     tokenId?: string
     expiredAt?: Date
+    remark?: string
+    certificateTypeId: number
+    certificateType: CertificateType
 }
 
 export interface CreateCertificateDto {
     title: string
     description?: string
     recipientEmail: string
-    additionalData?: Record<string, any>
-    status?: Certificate['status']
+    expiredAt?: Date
+    certificateTypeId: number
 }
 
-export interface UpdateCertificateDto extends CreateCertificateDto { }
+export interface UpdateCertificateDto extends Partial<CreateCertificateDto> { }
 
 export const CertificateAPI = {
     async create(payload: CreateCertificateDto): Promise<Certificate> {
@@ -112,6 +115,40 @@ export const CertificateAPI = {
             return response.data
         } catch (error: any) {
             console.error("Claim certificate error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
+    },
+
+    async approve(id: number): Promise<Certificate> {
+        try {
+            const response = await MainApiRequest.post(`/certificates/${id}/approve`)
+            return response.data
+        } catch (error: any) {
+            console.error("Approve certificate error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
+    },
+
+    async reject(id: number, reason: string): Promise<Certificate> {
+        try {
+            const response = await MainApiRequest.post(`/certificates/${id}/reject`, {
+                reason
+            })
+            return response.data
+        } catch (error: any) {
+            console.error("Reject certificate error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
+    },
+
+    async download(id: number): Promise<Blob> {
+        try {
+            const response = await MainApiRequest.get(`/certificates/png/${id}`, {
+                responseType: 'blob'
+            })
+            return response.data
+        } catch (error: any) {
+            console.error("Download certificate error:", error)
             throw new Error(error.response?.data?.message || error.message)
         }
     }

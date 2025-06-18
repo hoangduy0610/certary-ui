@@ -47,17 +47,15 @@ const AdminLayout: React.FC = () => {
               <Menu.Item key="certificates" icon={<IdcardOutlined />}>
                 <Link to="/admin/certificates">Certificates</Link>
               </Menu.Item>
+              <Menu.Item key="custom-certificates" icon={<IdcardOutlined />}>
+                <Link to="/admin/custom-certificates">Custom Certificates</Link>
+              </Menu.Item>
             </>
           )}
 
-          <Menu.Item key="certificate-types" icon={<BookOutlined />}>
+          {/* <Menu.Item key="certificate-types" icon={<BookOutlined />}>
             <Link to="/admin/certificate-types">Certificate Types</Link>
-          </Menu.Item>
-
-  
-            <Menu.Item key="custom-certificates" icon={<IdcardOutlined />}>
-              <Link to="/admin/custom-certificates">Custom Certificates</Link>
-            </Menu.Item>
+          </Menu.Item> */}
 
           {userInfo?.organization?.type === "verifier" && (
             <Menu.Item key="verifier-verify" icon={<IdcardOutlined />}>

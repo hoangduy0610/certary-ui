@@ -1,6 +1,8 @@
-import { Button, Form, Input, message, Modal } from "antd";
-import { useEffect } from "react";
+import { Button, DatePicker, Form, Input, message, Modal, Select } from "antd";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import { Certificate, CreateCertificateDto } from "../../../services/certificateAPI";
+import { CertificateType, CertificateTypeAPI } from "../../../services/certificateTypeAPI";
 
 interface FormCertificateProps {
     showModal?: boolean;
@@ -19,11 +21,26 @@ const FormCertificate: React.FC<FormCertificateProps> = ({
 }: FormCertificateProps) => {
     const [form] = Form.useForm<CreateCertificateDto>();
     const [messageApi, contextHolder] = message.useMessage();
+    const [certificateTypes, setCertificateTypes] = useState<CertificateType[]>([]);
 
     const handleCancel = () => {
         form.resetFields();
         onCancel();
     };
+
+    const fetchCertificateTypes = async () => {
+        try {
+            // Assuming you have a service to fetch certificate types
+            const types = await CertificateTypeAPI.getAll(); // Replace with actual API call
+            setCertificateTypes(types);
+        } catch (error) {
+            messageApi.error('Failed to load certificate types');
+        }
+    }
+
+    useEffect(() => {
+        fetchCertificateTypes();
+    }, []);
 
     const handleSubmit = () => {
         form.validateFields()
@@ -41,7 +58,11 @@ const FormCertificate: React.FC<FormCertificateProps> = ({
         }
 
         if (initialValues && Object.keys(initialValues).length > 0) {
-            form.setFieldsValue(initialValues);
+            console.log('Setting initial values:', initialValues);
+            form.setFieldsValue({
+                ...initialValues,
+                expiredAt: initialValues.expiredAt ? moment(initialValues.expiredAt) : undefined,
+            });
         }
     }, [showModal, initialValues, form]);
 
@@ -65,6 +86,19 @@ const FormCertificate: React.FC<FormCertificateProps> = ({
                     form={form}
                 >
                     <Form.Item
+                        name="certificateTypeId"
+                        label="Certificate Type"
+                        rules={[{ required: true, message: 'Please select a certificate type!' }]}
+                    >
+                        <Select placeholder="Select certificate type">
+                            {certificateTypes.map(type => (
+                                <Select.Option key={type.id} value={type.id}>
+                                    {type.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
                         name="title"
                         label="Certificate Name"
                         rules={[{ required: true, message: 'Please input the certificate name!' }]}
@@ -84,6 +118,13 @@ const FormCertificate: React.FC<FormCertificateProps> = ({
                         rules={[{ required: true, message: 'Please input the recipient email!' }]}
                     >
                         <Input placeholder="Enter recipient email" />
+                    </Form.Item>
+                    <Form.Item
+                        name="expiredAt"
+                        label="Expiration Date"
+                        rules={[{ required: true, message: 'Please select the expiration date!' }]}
+                    >
+                        <DatePicker type="date" placeholder="Select expiration date" />
                     </Form.Item>
                 </Form>
             </Modal>
