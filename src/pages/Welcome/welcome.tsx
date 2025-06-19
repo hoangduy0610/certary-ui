@@ -1,14 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Award, ChevronRight, Shield, Sparkles, Users } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ChevronRight, Sparkles, Award, Shield, Users } from "lucide-react"
+import { useUserInfo } from "../../hooks/useUserInfo"
 import "../Welcome/styles/Welcome.scss"
 
 export default function WelcomePage() {
-  const [userName, setUserName] = useState("John Doe") // This would come from auth context
   const [isVisible, setIsVisible] = useState(false)
   const navigate = useNavigate()
+
+  const { userInfo } = useUserInfo();
 
   useEffect(() => {
     setIsVisible(true)
@@ -40,7 +42,7 @@ export default function WelcomePage() {
         {/* Welcome Text */}
         <div className="welcome-text">
           <h1 className="main-title">Welcome</h1>
-          <h2 className="user-name">{userName}</h2>
+          <h2 className="user-name">{userInfo.firstName} {userInfo.lastName}</h2>
           <p className="to-text">to</p>
           <div className="brand-name">Certary</div>
         </div>

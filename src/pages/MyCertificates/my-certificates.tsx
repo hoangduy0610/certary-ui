@@ -1,17 +1,20 @@
 "use client"
 
+import { message } from "antd"
+import moment from "moment"
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Footer from "../../components/Footer/footer"
-import { Certificate, CertificateAPI } from "../../services/certificateAPI"
-import "./my-certificates.scss"
-import moment from "moment"
 import { Header } from "../../components/Header/Header"
+import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
+import { handleDownloadCertificate } from "../../utils/file"
+import "./my-certificates.scss"
 
 export default function MyCertificates() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilter, setActiveFilter] = useState("all")
   const [certificates, setCertificates] = useState<Certificate[]>([])
+  const [messageApi, contextHolder] = message.useMessage()
 
   const fetchCertificates = async () => {
     // Simulating an API call to fetch certificates
@@ -24,19 +27,19 @@ export default function MyCertificates() {
     fetchCertificates()
   }, [])
 
-  const mapBackgroundColorStatus = (status: string) => {
+  const mapBackgroundColorStatus = (status: EnumCertificateStatus) => {
     switch (status) {
-      case "claimed":
+      case EnumCertificateStatus.DRAFT:
         return "#4ade80" // Green
-      case "issued":
+      case EnumCertificateStatus.ISSUED:
         return "#60a5fa" // Blue
-      case "revoked":
+      case EnumCertificateStatus.CLAIMED:
         return "#f87171" // Red
-      case "rejected":
+      case EnumCertificateStatus.REVOKED:
         return "#fbbf24" // Yellow
-      case "draft":
+      case EnumCertificateStatus.REJECTED:
         return "#a78bfa" // Purple
-      case "expired":
+      case EnumCertificateStatus.EXPIRED:
         return "#f87171" // Red for expired
       default:
         return "#9ca3af" // Gray for unknown status
@@ -78,8 +81,13 @@ export default function MyCertificates() {
     return matchesSearch && matchesFilter
   })
 
+  const handleDownload = async (cert: Certificate) => {
+    await handleDownloadCertificate(cert, messageApi)
+  }
+
   return (
     <div className="certificatesPage">
+      {contextHolder}
       <Header active="my-certificates" />
 
       <div className="certificatesHero">
@@ -176,7 +184,7 @@ export default function MyCertificates() {
               <div className="statLabel">Total Certificates</div>
             </div>
             <div className="statCard">
-              <div className="statValue">{certificates.filter((c) => ["claimed", "issued"].includes(c.status)).length}</div>
+              <div className="statValue">{certificates.filter((c) => [EnumCertificateStatus.ISSUED, EnumCertificateStatus.CLAIMED].includes(c.status)).length}</div>
               <div className="statLabel">Valid Certificates</div>
             </div>
             <div className="statCard">
@@ -209,8 +217,8 @@ export default function MyCertificates() {
                   <div className="certificateDetail">
                     <span className="detailLabel">Status:</span>
                     <span className="status-valid" style={{
-                      backgroundColor: mapBackgroundColorStatus((!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : "expired"),
-                    }}>{(!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : "expired"}</span>
+                      backgroundColor: mapBackgroundColorStatus((!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : EnumCertificateStatus.EXPIRED),
+                    }}>{(!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : EnumCertificateStatus.EXPIRED}</span>
                   </div>
                   <div className="certificateActions">
                     <button className="btnLink" onClick={() => navigate(`/certificate-details/${cert.id}`)}>
@@ -231,7 +239,7 @@ export default function MyCertificates() {
                       </svg>
                       View Details
                     </button>
-                    <button className="btnLink downloadBtn">
+                    <button className="btnLink downloadBtn" onClick={() => handleDownload(cert)}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"

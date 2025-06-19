@@ -15,6 +15,7 @@ export interface UserInfo {
     updatedAt: Date;
     organization?: Organization;
     walletAddress?: string;
+    isFirstLogin?: boolean;
 }
 
 interface UserInfoContextType {

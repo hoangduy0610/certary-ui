@@ -1,166 +1,128 @@
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { BrowserQRCodeReader } from "@zxing/browser"
+import { Button, Modal, Result, message } from "antd"
+import { ethers } from "ethers"
 import {
+  Award,
+  Building,
+  Calendar,
+  Camera,
+  CheckCircle,
+  Copy,
+  Hash,
   QrCode,
   Search,
-  CheckCircle,
-  XCircle,
-  Camera,
-  Upload,
-  Copy,
   Shield,
-  Award,
-  Calendar,
-  User,
-  Building,
-  Hash,
   Sparkles,
+  Upload,
+  User,
+  XCircle,
 } from "lucide-react"
-import "./verify-certificate.scss"
-import { Header } from "../../components/Header/Header"
+import moment from "moment"
+import { useEffect, useRef, useState } from "react"
+import { QrReader } from "react-qr-reader"
+import { abi } from "../../common/NFTAbi"
 import Footer from "../../components/Footer/footer"
+import { Header } from "../../components/Header/Header"
+import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
+import "./verify-certificate.scss"
 
-interface Certificate {
-  id: string
-  title: string
-  recipientName: string
-  issuerName: string
-  issueDate: string
-  expiryDate?: string
-  status: "valid" | "expired" | "revoked"
-  description: string
-  skills: string[]
-  verificationHash: string
+export enum EnumNFTStatus {
+  DRAFT,
+  ISSUED,
+  REVOKED
 }
 
 export default function VerifyCertificate() {
   const [certificateId, setCertificateId] = useState("")
   const [isScanning, setIsScanning] = useState(false)
+  const [isOpenNFTResult, setIsOpenNFTResult] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [certificate, setCertificate] = useState<Certificate | null>(null)
+  const [certificate, setCertificate] = useState<Certificate>()
+  const [isVerified, setIsVerified] = useState(false)
+  const [mayVerifyNft, setMayVerifyNft] = useState(false)
+  const [isNftVerified, setIsNftVerified] = useState(false)
   const [error, setError] = useState("")
-  const [hasCamera, setHasCamera] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const [messageApi, contextHolder] = message.useMessage();
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Get query parameters
+  const queryParams = new URLSearchParams(window.location.search);
+  const initialCertificateId = queryParams.get("id") || "";
+
+  const [provider, setProvider] = useState<ethers.providers.Web3Provider | null>(null)
+  const [signer, setSigner] = useState<ethers.Signer | null>(null)
+  const [contract, setContract] = useState<ethers.Contract | null>(null)
+
   useEffect(() => {
-    // Check if camera is available
-    navigator.mediaDevices
-      ?.getUserMedia({ video: true })
-      .then((stream) => {
-        setHasCamera(true)
-        stream.getTracks().forEach((track) => track.stop())
-      })
-      .catch(() => setHasCamera(false))
-  }, [])
+    if (initialCertificateId) {
+      setCertificateId(initialCertificateId);
+      verifyCertificate(initialCertificateId)
+    }
+  }, [initialCertificateId])
 
   const startScanning = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      })
+      setIsScanning(true)
+      setError("")
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        streamRef.current = stream
-        setIsScanning(true)
-        setError("")
-
-        // Start QR detection
-        detectQRCode()
-      }
+      // Start QR detection
+      detectQRCode()
     } catch (err) {
       setError("Unable to access camera. Please check permissions.")
     }
   }
 
   const stopScanning = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
     setIsScanning(false)
   }
 
   const detectQRCode = () => {
-    if (!videoRef.current || !canvasRef.current || !isScanning) return
 
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    const context = canvas.getContext("2d")
-
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      context?.drawImage(video, 0, 0, canvas.width, canvas.height)
-
-      // In a real implementation, you would use a QR code detection library
-      // For demo purposes, we'll simulate QR detection
-      const imageData = context?.getImageData(0, 0, canvas.width, canvas.height)
-
-      // Simulate QR code detection (replace with actual QR library)
-      setTimeout(() => {
-        if (isScanning && Math.random() > 0.95) {
-          // Simulate random detection
-          const mockId = "CERT-" + Math.random().toString(36).substr(2, 9).toUpperCase()
-          setCertificateId(mockId)
-          stopScanning()
-        }
-      }, 100)
-    }
-
-    if (isScanning) {
-      requestAnimationFrame(detectQRCode)
-    }
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        // In a real implementation, you would decode QR from the image
-        // For demo purposes, simulate QR detection from image
-        const mockId = "CERT-" + Math.random().toString(36).substr(2, 9).toUpperCase()
-        setCertificateId(mockId)
-      }
-      reader.readAsDataURL(file)
+    const files = event?.target?.files;
+    const file = files ? files[0] : null;
+    if (!file) return;
+
+    setError('');
+    const url = URL.createObjectURL(file);
+
+    try {
+      const codeReader = new BrowserQRCodeReader();
+      const imageElement = document.createElement('img');
+
+      imageElement.src = url;
+      imageElement.onload = async () => {
+        try {
+          const decoded = await codeReader.decodeFromImageElement(imageElement);
+          console.log(decoded.getText());
+        } catch (err) {
+          setError('Could not decode QR code.');
+        }
+      };
+    } catch (err) {
+      setError('Failed to process image.');
     }
   }
 
-  const verifyCertificate = async () => {
-    if (!certificateId.trim()) {
+  const verifyCertificate = async (initialCertificateId?: string) => {
+    const certId = initialCertificateId || certificateId;
+    if (!certId.trim()) {
       setError("Please enter a certificate ID")
       return
     }
 
     setIsLoading(true)
     setError("")
-    setCertificate(null)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Mock certificate data
-      const mockCertificate: Certificate = {
-        id: certificateId,
-        title: "Advanced Web Development Certificate",
-        recipientName: "John Doe",
-        issuerName: "Tech Academy",
-        issueDate: "2024-01-15",
-        expiryDate: "2026-01-15",
-        status: Math.random() > 0.3 ? "valid" : Math.random() > 0.5 ? "expired" : "revoked",
-        description:
-          "This certificate validates the completion of advanced web development course including React, Node.js, and database management.",
-        skills: ["React", "Node.js", "MongoDB", "TypeScript", "REST APIs"],
-        verificationHash: "sha256:" + Math.random().toString(36).substr(2, 32),
-      }
-
-      setCertificate(mockCertificate)
+      const response = await CertificateAPI.verify(certId.trim())
+      setCertificate(response.certificate)
+      setIsVerified(response.valid)
+      setMayVerifyNft(response.nftVerified)
     } catch (err) {
       setError("Certificate not found or verification failed")
     } finally {
@@ -168,18 +130,65 @@ export default function VerifyCertificate() {
     }
   }
 
+  const initWallet = async () => {
+    if (!window.ethereum) {
+      messageApi.error("Please install MetaMask or another Ethereum wallet to connect.")
+      return;
+    }
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const t_provider = new ethers.providers.Web3Provider(window.ethereum);
+    const network = await t_provider.getNetwork();
+    if (network.chainId !== 17000) { // Holesky chain ID
+      messageApi.error("Please switch to the Holesky test network (Chain ID: 17000).");
+      return;
+    }
+    const contractAddress = process.env.REACT_APP_NFT_CONTRACT_ADDRESS || "";
+    const t_signer = t_provider.getSigner();
+    const t_contract = new ethers.Contract(contractAddress, abi, t_signer);
+    setContract(t_contract);
+    setProvider(t_provider);
+    setSigner(t_signer);
+  }
+
+  const verifyNft = async (certificateId?: string) => {
+    if (!certificateId) {
+      messageApi.error("Certificate ID is required to verify with NFT.")
+      return
+    }
+
+    if (!provider || !signer || !contract) {
+      messageApi.error("Provider or contract is not initialized. Please connect your wallet first.")
+      return
+    }
+
+    const result: {
+      valid: boolean
+      expireAt?: BigInt
+      issuedAt: BigInt,
+      status: EnumNFTStatus,
+      currentOwner: string,
+    } = await contract?.verifyCertificate(certificateId);
+    const isValid = result.valid && moment(parseInt(result.expireAt?.toString() || "0") * 1000).isAfter(moment())
+    setIsNftVerified(isValid);
+    setIsOpenNFTResult(true);
+  }
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: EnumCertificateStatus) => {
     switch (status) {
-      case "valid":
-        return "valid"
-      case "expired":
-        return "expired"
-      case "revoked":
-        return "revoked"
+      case EnumCertificateStatus.DRAFT:
+        return 'bg-blue';
+      case EnumCertificateStatus.REJECTED:
+        return 'bg-orange';
+      case EnumCertificateStatus.ISSUED:
+        return 'bg-green';
+      case EnumCertificateStatus.CLAIMED:
+        return 'bg-purple';
+      case EnumCertificateStatus.REVOKED:
+        return 'bg-red';
       default:
         return ""
     }
@@ -200,6 +209,7 @@ export default function VerifyCertificate() {
 
   return (
     <div className="verify-certificate-page">
+      {contextHolder}
       {/* Hero Section */}
       <Header active="verify-certificate" />
       <div className="hero-section">
@@ -242,12 +252,14 @@ export default function VerifyCertificate() {
                 </p>
               </div>
               <div className="card-content">
-                <div className="input-group">
+                <div className="input-group mb-0">
                   <label className="input-label">
                     <Hash className="w-4 h-4" />
                     Certificate ID
                   </label>
-                  <div className="input-wrapper">
+                </div>
+                <div className="input-group">
+                  <div className="input-wrapper w-100">
                     <input
                       type="text"
                       placeholder="Enter certificate ID (e.g., CERT-ABC123)"
@@ -255,7 +267,7 @@ export default function VerifyCertificate() {
                       onChange={(e) => setCertificateId(e.target.value)}
                       className="certificate-input"
                     />
-                    <button onClick={verifyCertificate} disabled={isLoading} className="verify-button">
+                    <button onClick={() => verifyCertificate()} disabled={isLoading} className="verify-button">
                       {isLoading ? (
                         <>
                           <div className="loading-spinner"></div>
@@ -271,7 +283,7 @@ export default function VerifyCertificate() {
                   </div>
                 </div>
 
-                <div className="divider">
+                {/* <div className="divider">
                   <span className="divider-text">OR</span>
                 </div>
 
@@ -282,15 +294,13 @@ export default function VerifyCertificate() {
                   </label>
 
                   <div className="qr-buttons">
-                    {hasCamera && (
-                      <button
-                        onClick={isScanning ? stopScanning : startScanning}
-                        className={`qr-button ${isScanning ? "scanning" : ""}`}
-                      >
-                        <Camera className="w-4 h-4" />
-                        {isScanning ? "Stop Scanning" : "Scan QR Code"}
-                      </button>
-                    )}
+                    <button
+                      onClick={isScanning ? stopScanning : startScanning}
+                      className={`qr-button ${isScanning ? "scanning" : ""}`}
+                    >
+                      <Camera className="w-4 h-4" />
+                      {isScanning ? "Stop Scanning" : "Scan QR Code"}
+                    </button>
 
                     <button onClick={() => fileInputRef.current?.click()} className="qr-button">
                       <Upload className="w-4 h-4" />
@@ -303,9 +313,9 @@ export default function VerifyCertificate() {
                     type="file"
                     accept="image/*"
                     onChange={handleFileUpload}
-                    className="hidden"
+                    style={{ display: "none" }}
                   />
-                </div>
+                </div> */}
 
                 {error && (
                   <div className="error-alert">
@@ -327,8 +337,15 @@ export default function VerifyCertificate() {
                     QR Code Scanner
                   </h3>
                   <div className="scanner-video">
-                    <video ref={videoRef} autoPlay playsInline className="w-full rounded-lg" />
-                    <canvas ref={canvasRef} className="hidden" />
+                    {isScanning &&
+                      <QrReader
+                        constraints={{ facingMode: "user" }}
+                        onResult={(result, error) => {
+                          if (!isScanning) return;
+                          console.log("QR Result:", result, "Error:", error);
+                        }}
+                      />
+                    }
                     <div className="scanner-overlay">
                       <div className="corner top-left"></div>
                       <div className="corner top-right"></div>
@@ -372,7 +389,7 @@ export default function VerifyCertificate() {
                       <User className="w-4 h-4" />
                       Recipient
                     </label>
-                    <p className="detail-value">{certificate.recipientName}</p>
+                    <p className="detail-value">{certificate.owner?.firstName} {certificate.owner?.lastName}</p>
                   </div>
 
                   <div className="detail-group">
@@ -380,7 +397,7 @@ export default function VerifyCertificate() {
                       <Building className="w-4 h-4" />
                       Issued By
                     </label>
-                    <p className="detail-value">{certificate.issuerName}</p>
+                    <p className="detail-value">{certificate.issuer?.name}</p>
                   </div>
 
                   <div className="detail-group">
@@ -388,16 +405,16 @@ export default function VerifyCertificate() {
                       <Calendar className="w-4 h-4" />
                       Issue Date
                     </label>
-                    <p className="detail-value">{new Date(certificate.issueDate).toLocaleDateString()}</p>
+                    <p className="detail-value">{moment(certificate.createdAt).format("DD-MM-YYYY")}</p>
                   </div>
 
-                  {certificate.expiryDate && (
+                  {certificate.expiredAt && (
                     <div className="detail-group">
                       <label className="detail-label">
                         <Calendar className="w-4 h-4" />
                         Expiry Date
                       </label>
-                      <p className="detail-value">{new Date(certificate.expiryDate).toLocaleDateString()}</p>
+                      <p className="detail-value">{moment(certificate.expiredAt).format("DD-MM-YYYY")}</p>
                     </div>
                   )}
 
@@ -407,8 +424,8 @@ export default function VerifyCertificate() {
                       Certificate ID
                     </label>
                     <div className="detail-id">
-                      <span className="id-text">{certificate.id}</span>
-                      <button className="copy-button" onClick={() => copyToClipboard(certificate.id)}>
+                      <span className="id-text">{certificate.certificateId}</span>
+                      <button className="copy-button" onClick={() => copyToClipboard(certificate.certificateId || "")}>
                         <Copy className="w-4 h-4" />
                       </button>
                     </div>
@@ -420,7 +437,7 @@ export default function VerifyCertificate() {
                   <p className="description-text">{certificate.description}</p>
                 </div>
 
-                <div className="skills-section">
+                {/* <div className="skills-section">
                   <label className="section-label">Skills & Competencies</label>
                   <div className="skills-grid">
                     {certificate.skills.map((skill, index) => (
@@ -429,9 +446,9 @@ export default function VerifyCertificate() {
                       </span>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
-                <div className="hash-section">
+                {/* <div className="hash-section">
                   <label className="section-label">Verification Hash</label>
                   <div className="hash-container">
                     <span className="hash-text">{certificate.verificationHash}</span>
@@ -439,24 +456,50 @@ export default function VerifyCertificate() {
                       <Copy className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
+                </div> */}
 
-                {certificate.status === "valid" && (
+                {isVerified && (
                   <div className="status-alert valid">
                     <CheckCircle className="h-5 w-5" />✨ This certificate is valid and has been successfully verified
                     through our secure system.
                   </div>
                 )}
 
-                {certificate.status === "expired" && (
-                  <div className="status-alert expired">
+                {mayVerifyNft && (
+                  <div className="status-alert valid mt-3">
+                    <CheckCircle className="h-5 w-5" />✨ This certificate has NFT Validation, you can verify it now.
+                    <Button
+                      variant="outlined"
+                      color="orange"
+                      onClick={initWallet}
+                      size="large"
+                      disabled={!!provider}
+                    >
+                      <img src="https://etherscan.io/images/svg/brands/metamask.svg" alt="Metamask Icon" height={30} />
+                      Connect with Metamask
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="orange"
+                      onClick={() => verifyNft(certificate.certificateId)}
+                      size="large"
+                      disabled={!provider}
+                    >
+                      <img src="https://etherscan.io/images/svg/brands/metamask.svg" alt="Metamask Icon" height={30} />
+                      Verify NFT
+                    </Button>
+                  </div>
+                )}
+
+                {(certificate.expiredAt && moment(certificate.expiredAt).isBefore(moment())) && (
+                  <div className="status-alert expired mt-3">
                     <XCircle className="h-5 w-5" />
                     ⚠️ This certificate has expired and is no longer valid.
                   </div>
                 )}
 
                 {certificate.status === "revoked" && (
-                  <div className="status-alert revoked">
+                  <div className="status-alert revoked mt-3">
                     <XCircle className="h-5 w-5" />🚫 This certificate has been revoked and is no longer valid.
                   </div>
                 )}
@@ -465,6 +508,32 @@ export default function VerifyCertificate() {
           )}
         </div>
       </div>
+
+      <Modal
+        title="Certificate Verification Results"
+        open={isOpenNFTResult}
+        onCancel={() => setIsOpenNFTResult(false)}
+        footer={[
+          <Button key="close" onClick={() => setIsOpenNFTResult(false)}>
+            Close
+          </Button>,
+        ]}
+      >
+        <Result
+          status={isNftVerified ? "success" : "error"}
+          title={isNftVerified ? "NFT Verification Successful!" : "NFT Verification Failed"}
+          subTitle={
+            isNftVerified
+              ? (
+                <div>
+                  <p>Certificate is verified with NFT.</p>
+                  <p>You can see NFT at: <a target="_blank" href={`https://holesky.etherscan.io/nft/${process.env.REACT_APP_NFT_CONTRACT_ADDRESS}/${certificate?.tokenId}`}>here</a></p>
+                </div>
+              )
+              : "Please check the certificate ID or connect your wallet."
+          }
+        />
+      </Modal>
       <Footer />
     </div>
   )

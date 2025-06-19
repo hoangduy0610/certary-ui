@@ -4,6 +4,7 @@ import type React from "react"
 
 import { ArrowLeft, Edit, Download, Share, Printer, Info } from "lucide-react"
 import "./certificate-preview.scss"
+import { EnumTemplateStatus } from "../../../services/certificateTypeAPI"
 
 interface CertificateElement {
   id: string
@@ -36,7 +37,7 @@ interface CertificateTemplate {
   type: string
   description: string
   lastModified: string
-  status: "active" | "draft"
+  status: EnumTemplateStatus
   elements: CertificateElement[]
   backgroundColor?: string
   backgroundImage?: string

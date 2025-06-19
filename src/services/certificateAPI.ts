@@ -4,12 +4,21 @@ import { CertificateType } from "./certificateTypeAPI"
 import { Organization } from "./organizationsAPI"
 import { User } from "./userAPI"
 
+export enum EnumCertificateStatus {
+    DRAFT = 'draft',
+    REJECTED = 'rejected',
+    ISSUED = 'issued',
+    CLAIMED = 'claimed',
+    REVOKED = 'revoked',
+    EXPIRED = 'expired',
+}
+
 export interface Certificate {
     id: number
     title: string
     description?: string
     recipientEmail: string
-    status: 'draft' | 'rejected' | 'issued' | 'claimed' | 'revoked'
+    status: EnumCertificateStatus;
     createdAt: Date
     updatedAt: Date
     issuer?: Organization
@@ -20,6 +29,8 @@ export interface Certificate {
     remark?: string
     certificateTypeId: number
     certificateType: CertificateType
+    isClaimable?: boolean
+    revoked?: boolean
 }
 
 export interface CreateCertificateDto {
@@ -99,7 +110,7 @@ export const CertificateAPI = {
         }
     },
 
-    async verify(certificateId: string): Promise<{ valid: boolean, certificate: Certificate }> {
+    async verify(certificateId: string): Promise<{ valid: boolean, nftVerified: boolean, certificate: Certificate }> {
         try {
             const response = await MainApiRequest.get(`/certificates/verify/${certificateId}`)
             return response.data

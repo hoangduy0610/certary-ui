@@ -10,7 +10,7 @@ import moment from "moment"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { abi } from "../../../common/NFTAbi"
-import { Certificate, CertificateAPI } from "../../../services/certificateAPI"
+import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../../services/certificateAPI"
 import "./VerifyCertificate.scss"
 
 const { Title, Paragraph, Text } = Typography
@@ -264,8 +264,8 @@ const VerifyCertificate: React.FC<VerifyCertificateProps> = ({ initialId = "", o
                       </Paragraph>
                       <Paragraph>
                         <Text strong>Status:</Text>{" "}
-                        <Tag color={["issued", "claimed"].includes(certificateData.status) ? "green" : "red"}>
-                          {["issued", "claimed"].includes(certificateData.status) ? "Active" : "Revoked"}
+                        <Tag color={[EnumCertificateStatus.ISSUED, EnumCertificateStatus.CLAIMED].includes(certificateData.status) ? "green" : "red"}>
+                          {[EnumCertificateStatus.ISSUED, EnumCertificateStatus.CLAIMED].includes(certificateData.status) ? "Active" : "Revoked"}
                         </Tag>
                       </Paragraph>
                     </div>

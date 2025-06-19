@@ -1,10 +1,12 @@
+import { MonitorOutlined } from "@ant-design/icons"
+import { Button, Modal, Tag, message } from "antd"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { Certificate, CertificateAPI } from "../../services/certificateAPI"
-import "./certificate-details.scss"
-import { Tag, message } from "antd"
+import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
 import { handleDownloadCertificate } from "../../utils/file"
+import { renderQr } from "../../utils/uri"
+import "./certificate-details.scss"
 
 interface CertificateDetailProps {
   onClose?: () => void
@@ -15,6 +17,7 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
   const [activeTab, setActiveTab] = useState("overview")
   const [cert, setCert] = useState<Certificate>();
   const [messageApi, contextHolder] = message.useMessage()
+  const [showShareModal, setShowShareModal] = useState(false)
   const navigate = useNavigate()
 
   const fetchCertificate = async (id: string) => {
@@ -41,19 +44,19 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
     onClose?.()
   }
 
-  const mapStatusToColor = (status?: string) => {
+  const mapStatusToColor = (status?: EnumCertificateStatus) => {
     switch (status) {
-      case "claimed":
+      case EnumCertificateStatus.DRAFT:
         return "#4ade80" // Green
-      case "issued":
+      case EnumCertificateStatus.ISSUED:
         return "#60a5fa" // Blue
-      case "revoked":
+      case EnumCertificateStatus.CLAIMED:
         return "#f87171" // Red
-      case "rejected":
+      case EnumCertificateStatus.REVOKED:
         return "#fbbf24" // Yellow
-      case "draft":
+      case EnumCertificateStatus.REJECTED:
         return "#a78bfa" // Purple
-      case "expired":
+      case EnumCertificateStatus.EXPIRED:
         return "#f87171" // Red for expired
       default:
         return "#9ca3af" // Gray for unknown status
@@ -88,19 +91,7 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
       messageApi.error("Certificate data is not available")
       return
     }
-    const shareData = {
-      title: `Certificate: ${cert.title}`,
-      text: `Check out my certificate titled "${cert.title}" issued by ${cert.issuer?.name}.`,
-      url: window.location.href,
-    }
-
-    // Copy to clipboard and show success message
-    navigator.clipboard.writeText(shareData.url).then(() => {
-      messageApi.success("Certificate details copied to clipboard!")
-    }).catch((error) => {
-      console.error("Error copying to clipboard:", error)
-      messageApi.error("Failed to copy certificate details")
-    });
+    setShowShareModal(true);
   }
 
 
@@ -166,14 +157,18 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
                 <h1>{cert?.title}</h1>
                 <div className="statusBadge">
                   {/* <span className={`status ${cert?.status.toLowerCase()}`}>{cert?.status}</span> */}
-                  <Tag color={mapStatusToColor((!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : "expired")}>
-                    {(!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : "expired"}
+                  <Tag color={mapStatusToColor((!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : EnumCertificateStatus.EXPIRED)}>
+                    {(!cert?.expiredAt || moment(cert?.expiredAt).isAfter(moment())) ? cert?.status : EnumCertificateStatus.EXPIRED}
                   </Tag>
                   <span className="category">Certificate</span>
                 </div>
               </div>
               <div className="actionButtons">
-                <button className="actionBtn primary" onClick={handleDownload}>
+                <button className="actionBtn primary" onClick={() => navigate(`/verify-certificate?id=${cert?.certificateId}`)}>
+                  <MonitorOutlined />
+                  Verify
+                </button>
+                <button className="actionBtn download" onClick={handleDownload}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -312,6 +307,29 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
           </div>
         </div>
       </div>
+      <Modal
+        title="Share Certificate"
+        open={showShareModal}
+        onCancel={() => setShowShareModal(false)}
+        footer={null}
+        centered
+        width={400}
+      >
+        <div className="shareModalContent d-flex flex-column justify-content-center align-items-center gap-2">
+          <p>Share your certificate details with others:</p>
+          <img src={renderQr(window.location.href)} alt="QR Code" className="qrCode" />
+          <Button
+            className="shareButton mt-2"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href)
+              messageApi.success("Certificate details copied to clipboard!")
+              setShowShareModal(false)
+            }}
+          >
+            Copy Link to Clipboard
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -2,6 +2,22 @@ import MainApiRequest from './MainApiRequest';
 
 const API_BASE = '/certificate-types';
 
+export enum EnumTemplateStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
+export enum EnumTemplateType {
+  AWARD = 'award',
+  PARTICIPATION = 'participation',
+  TRAINING = 'training',
+  INTERNSHIP = 'internship',
+  COMPLETION = 'completion',
+  COURSE = 'course',
+  COMPETITION = 'competition',
+  OTHERS = 'others',
+}
+
 export interface CertificateType {
   id: number;
   createdAt?: Date;
@@ -11,6 +27,8 @@ export interface CertificateType {
   description: string;
   layoutJson: any;
   organizationId: number;
+  status: EnumTemplateStatus;
+  type: EnumTemplateType;
 }
 
 export interface CreateCertificateTypeDto {

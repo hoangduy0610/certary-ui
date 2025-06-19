@@ -4,12 +4,13 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminHeader from '../../../components/AdminHeader/adminHeader';
-import { Certificate, CertificateAPI, CreateCertificateDto } from '../../../services/certificateAPI';
+import { Certificate, CertificateAPI, CreateCertificateDto, EnumCertificateStatus } from '../../../services/certificateAPI';
 import { Organization } from '../../../services/organizationsAPI';
 import { User } from '../../../services/userAPI';
+import { handleDownloadCertificate } from '../../../utils/file';
+import { renderCertQr } from '../../../utils/uri';
 import './Certificates.scss';
 import FormCertificate from './FormCertificate';
-import { handleDownloadCertificate } from '../../../utils/file';
 
 const CertificatesPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -95,17 +96,17 @@ const CertificatesPage: React.FC = () => {
     setFormRejectLoading(false);
   };
 
-  const mapStatusColor = (status: string): string => {
+  const mapStatusColor = (status: EnumCertificateStatus): string => {
     switch (status) {
-      case 'draft':
+      case EnumCertificateStatus.DRAFT:
         return 'blue';
-      case 'rejected':
+      case EnumCertificateStatus.REJECTED:
         return 'orange';
-      case 'issued':
+      case EnumCertificateStatus.ISSUED:
         return 'green';
-      case 'claimed':
+      case EnumCertificateStatus.CLAIMED:
         return 'purple';
-      case 'revoked':
+      case EnumCertificateStatus.REVOKED:
         return 'red';
       default:
         return 'default';
@@ -113,13 +114,14 @@ const CertificatesPage: React.FC = () => {
   };
 
   const columns = [
-    // {
-    //   title: '',
-    //   dataIndex: 'checkbox',
-    //   key: 'checkbox',
-    //   render: () => null,
-    //   width: 50,
-    // },
+    {
+      title: '',
+      dataIndex: 'id',
+      key: 'id',
+      render: (_: number, cert: Certificate) => (
+        <img width="75" src={renderCertQr(cert.certificateId || "")} />
+      ),
+    },
     {
       title: 'Token ID',
       dataIndex: 'tokenId',
@@ -160,14 +162,15 @@ const CertificatesPage: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        const statusMap: Record<string, string> = {
-          draft: 'Draft',
-          rejected: 'Rejected',
-          issued: 'Issued',
-          claimed: 'Claimed',
-          revoked: 'Revoked'
-        };
+      render: (status: EnumCertificateStatus) => {
+        const statusMap: Record<EnumCertificateStatus, string> = {
+          [EnumCertificateStatus.DRAFT]: 'Draft',
+          [EnumCertificateStatus.REJECTED]: 'Rejected',
+          [EnumCertificateStatus.ISSUED]: 'Issued',
+          [EnumCertificateStatus.CLAIMED]: 'Claimed',
+          [EnumCertificateStatus.REVOKED]: 'Revoked',
+          [EnumCertificateStatus.EXPIRED]: 'Expired',
+        }
         return <Tag color={mapStatusColor(status)}>
           {statusMap[status] || 'Unknown Status'}
         </Tag>;
@@ -207,7 +210,7 @@ const CertificatesPage: React.FC = () => {
             </Button>
           </Tooltip>
           {
-            (record.status === 'draft' || record.status === 'rejected') &&
+            (record.status === EnumCertificateStatus.DRAFT || record.status === EnumCertificateStatus.REJECTED) &&
             <Tooltip title="Edit Certificate">
               <Button variant="outlined" color="primary" onClick={() => {
                 handleEditCertificate(record);
@@ -217,7 +220,7 @@ const CertificatesPage: React.FC = () => {
             </Tooltip>
           }
           {
-            (record.status === 'draft') &&
+            (record.status === EnumCertificateStatus.DRAFT) &&
             <Tooltip title="Approve Certificate">
               <Button variant="outlined" color="green" onClick={() => {
                 handleApproveCert(record);
@@ -227,7 +230,7 @@ const CertificatesPage: React.FC = () => {
             </Tooltip>
           }
           {
-            (record.status === 'draft') &&
+            (record.status === EnumCertificateStatus.DRAFT) &&
             <Tooltip title="Reject Certificate">
               <Button variant="outlined" color="red" onClick={() => {
                 handleOpenRejectModal(record);
@@ -237,7 +240,7 @@ const CertificatesPage: React.FC = () => {
             </Tooltip>
           }
           {
-            (record.status === 'issued' || record.status === 'claimed') && (
+            (record.status === EnumCertificateStatus.ISSUED || record.status === EnumCertificateStatus.CLAIMED) && (
               <Tooltip title="Revoke Certificate">
                 <Popconfirm
                   title="Are you sure you want to revoke this certificate?"

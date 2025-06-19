@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { Wallet, Shield, CheckCircle, AlertCircle, ExternalLink, ArrowLeft, Zap } from "lucide-react"
+import { AlertCircle, ArrowLeft, CheckCircle, ExternalLink, Shield, Wallet, Zap } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import metamaskLogo from "../../components/images/metamask.png"
+import { useUserInfo } from "../../hooks/useUserInfo"
 import "../Welcome/styles/ConnectWallet.scss"
+import { UserAPI } from "../../services/userAPI"
 
 export default function ConnectWalletPage() {
     const [isVisible, setIsVisible] = useState(false)
@@ -12,25 +14,23 @@ export default function ConnectWalletPage() {
     const [isConnected, setIsConnected] = useState(false)
     const [walletAddress, setWalletAddress] = useState("")
     const [error, setError] = useState("")
+    const { userInfo } = useUserInfo()
+
+    // Get search params
+    const [searchParams] = useSearchParams()
 
     const navigate = useNavigate()
 
     useEffect(() => {
         setIsVisible(true)
         checkWalletConnection()
-    }, [])
+    }, [userInfo])
 
     const checkWalletConnection = async () => {
-        if (typeof window !== "undefined" && (window as any).ethereum) {
-            try {
-                const accounts = await (window as any).ethereum.request({ method: "eth_accounts" })
-                if (accounts.length > 0) {
-                    setIsConnected(true)
-                    setWalletAddress(accounts[0])
-                }
-            } catch (error) {
-                console.error("Error checking wallet connection:", error)
-            }
+        if (userInfo?.walletAddress) {
+            setWalletAddress(userInfo.walletAddress)
+            setIsConnected(true)
+            return
         }
     }
 
@@ -49,13 +49,10 @@ export default function ConnectWalletPage() {
             })
 
             if (accounts.length > 0) {
+                const response = await UserAPI.updateWallet({ walletAddress: accounts[0] });
+                setWalletAddress(response?.walletAddress || accounts[0])
                 setIsConnected(true)
-                setWalletAddress(accounts[0])
-
-                // Simulate API call to save wallet connection
-                setTimeout(() => {
-                    setIsConnecting(false)
-                }, 2000)
+                setIsConnecting(false)
             }
         } catch (error: any) {
             setIsConnecting(false)
@@ -65,12 +62,6 @@ export default function ConnectWalletPage() {
                 setError("Failed to connect wallet. Please try again.")
             }
         }
-    }
-
-    const disconnectWallet = () => {
-        setIsConnected(false)
-        setWalletAddress("")
-        setError("")
     }
 
     return (
@@ -84,9 +75,9 @@ export default function ConnectWalletPage() {
             <div className={`wallet-container ${isVisible ? "visible" : "hidden"}`}>
                 {/* Back Button */}
                 <div className="back-button">
-                    <button onClick={() => navigate("/onboarding")} className="back-btn">
+                    <button onClick={() => navigate(searchParams?.get("redirect") || "/onboarding")} className="back-btn">
                         <ArrowLeft className="arrow-icon" />
-                        Back to Information
+                        Back to {searchParams?.get("backTitle") || "Onboarding"}
                     </button>
                 </div>
 
@@ -198,25 +189,28 @@ export default function ConnectWalletPage() {
                             </div>
 
                             <div className="action-buttons">
-                                <button onClick={() => navigate("/dashboard")} className="continue-btn">
-                                    Continue to Dashboard
+                                <button onClick={() => navigate(searchParams?.get("redirect") || "/")} className="continue-btn">
+                                    {searchParams?.get("continueText") || "Continue to Dashboard"}
                                 </button>
-                                <button onClick={disconnectWallet} className="disconnect-btn">
+                                {/* <button onClick={disconnectWallet} className="disconnect-btn">
                                     Disconnect
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Progress Indicator */}
-                <div className="progress-indicator">
-                    <div className="progress-dots">
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="line"></div>
+                {
+                    false &&
+                    <div className="progress-indicator">
+                        <div className="progress-dots">
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                            <div className="line"></div>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
     )

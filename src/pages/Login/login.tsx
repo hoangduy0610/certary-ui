@@ -47,7 +47,11 @@ const LoginForm: React.FC = () => {
       console.log("Login successful:", response)
       getUserInfo()
       // Redirect to Welcome page
-      navigate("/welcome")
+      if (response.isFirstLogin) {
+        navigate("/welcome")
+      } else {
+        navigate("/")
+      }
     } catch (err: any) {
       setError(err.message || "Login failed")
     } finally {
