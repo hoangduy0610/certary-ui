@@ -136,8 +136,8 @@ const Users: React.FC = () => {
           <Row justify="space-between" className="users-actions">
             <Col>
               <Space>
-                <Button icon={<FilterOutlined />}>Filter</Button>
-                <Button icon={<ExportOutlined />}>Export</Button>
+                {/* <Button icon={<FilterOutlined />}>Filter</Button>
+                <Button icon={<ExportOutlined />}>Export</Button> */}
               </Space>
             </Col>
             <Col>

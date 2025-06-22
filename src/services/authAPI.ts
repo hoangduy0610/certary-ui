@@ -10,7 +10,7 @@ interface RegisterData {
   password: string
   firstName: string
   lastName: string
-  walletAddress: string
+  // walletAddress: string
 }
 
 export const authAPI = {

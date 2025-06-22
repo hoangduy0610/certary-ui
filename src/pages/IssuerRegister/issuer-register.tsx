@@ -1,8 +1,8 @@
 import type React from "react"
 import { useState } from "react"
 
+import organizationsAPI from "../../services/organizationsAPI"
 import "./issuer-register.scss"
-import { authAPI } from "../../services/authAPI"
 
 interface IssuerRegisterFormData {
     organizationName: string
@@ -81,26 +81,22 @@ const IssuerRegisterForm: React.FC = () => {
                 adminEmail: formData.email,
                 adminPassword: formData.password,
                 description: formData.description,
-                type: "Issuer",
+                // type: "Issuer",
                 logo: formData.logo || undefined,
                 website: formData.website || undefined,
             }
 
-            const response = await authAPI.register(payload as any)
+            const response = await organizationsAPI.create(payload)
             console.log("Issuer registration successful:", response)
             setSuccess(true)
-
-            setTimeout(() => {
-                setFormData({
-                    organizationName: "",
-                    email: "",
-                    password: "",
-                    description: "",
-                    logo: "",
-                    website: "",
-                })
-                setSuccess(false)
-            }, 3000)
+            setFormData({
+                organizationName: "",
+                email: "",
+                password: "",
+                description: "",
+                logo: "",
+                website: "",
+            })
         } catch (err: any) {
             setError(err.message || "Registration failed. Please try again.")
         } finally {
@@ -116,7 +112,7 @@ const IssuerRegisterForm: React.FC = () => {
                         <div className="success-icon">✓</div>
                         <h2>Registration Successful!</h2>
                         <p>Your issuer account has been created successfully.</p>
-                        <p>Please check your email to verify your account.</p>
+                        <p>Please wait for approval from administrators.</p>
                         <button className="back-button" onClick={() => setSuccess(false)}>
                             Register another organization
                         </button>

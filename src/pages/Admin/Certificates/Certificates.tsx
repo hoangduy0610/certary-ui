@@ -11,6 +11,7 @@ import { handleDownloadCertificate } from '../../../utils/file';
 import { renderCertQr } from '../../../utils/uri';
 import './Certificates.scss';
 import FormCertificate from './FormCertificate';
+import { useUserInfo } from '../../../hooks/useUserInfo';
 
 const CertificatesPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -22,6 +23,7 @@ const CertificatesPage: React.FC = () => {
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [data, setData] = useState<Certificate[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const { userInfo } = useUserInfo();
   const navigate = useNavigate();
 
   const fetchCertificates = async () => {
@@ -220,7 +222,7 @@ const CertificatesPage: React.FC = () => {
             </Tooltip>
           }
           {
-            (record.status === EnumCertificateStatus.DRAFT) &&
+            (record.status === EnumCertificateStatus.DRAFT && userInfo?.role === "org_manager") &&
             <Tooltip title="Approve Certificate">
               <Button variant="outlined" color="green" onClick={() => {
                 handleApproveCert(record);
@@ -230,7 +232,7 @@ const CertificatesPage: React.FC = () => {
             </Tooltip>
           }
           {
-            (record.status === EnumCertificateStatus.DRAFT) &&
+            (record.status === EnumCertificateStatus.DRAFT && userInfo?.role === "org_manager") &&
             <Tooltip title="Reject Certificate">
               <Button variant="outlined" color="red" onClick={() => {
                 handleOpenRejectModal(record);
@@ -295,8 +297,8 @@ const CertificatesPage: React.FC = () => {
           <Row justify="space-between" className="actions-row">
             <Col>
               <Space>
-                <Button icon={<FilterOutlined />}>Filter</Button>
-                <Button icon={<ExportOutlined />}>Export</Button>
+                {/* <Button icon={<FilterOutlined />}>Filter</Button>
+                <Button icon={<ExportOutlined />}>Export</Button> */}
               </Space>
             </Col>
             <Col>

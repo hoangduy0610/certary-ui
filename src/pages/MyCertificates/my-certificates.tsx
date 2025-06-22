@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Footer from "../../components/Footer/footer"
 import { Header } from "../../components/Header/Header"
+import { useUserInfo } from "../../hooks/useUserInfo"
 import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
 import { handleDownloadCertificate } from "../../utils/file"
 import "./my-certificates.scss"
@@ -15,11 +16,12 @@ export default function MyCertificates() {
   const [activeFilter, setActiveFilter] = useState("all")
   const [certificates, setCertificates] = useState<Certificate[]>([])
   const [messageApi, contextHolder] = message.useMessage()
+  const { userInfo } = useUserInfo();
 
   const fetchCertificates = async () => {
     // Simulating an API call to fetch certificates
     const data = await CertificateAPI.getAll();
-    setCertificates(data)
+    setCertificates(data.filter(cert => cert?.owner?.id === userInfo?.id));
   }
 
   useEffect(() => {

@@ -48,7 +48,7 @@ const AdminLayout: React.FC = () => {
                 <Link to="/admin/certificates">Certificates</Link>
               </Menu.Item>
               <Menu.Item key="custom-certificates" icon={<IdcardOutlined />}>
-                <Link to="/admin/custom-certificates">Custom Certificates</Link>
+                <Link to="/admin/custom-certificates">Templates</Link>
               </Menu.Item>
             </>
           )}
@@ -71,7 +71,7 @@ const AdminLayout: React.FC = () => {
         </Menu>
       </Sider>
       <Layout>
-        <Content style={{ margin: 0 }}>
+        <Content style={{ margin: 0, padding: 0 }}>
           <Outlet />
         </Content>
       </Layout>

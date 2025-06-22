@@ -1,5 +1,9 @@
 .certificates-page {
+
   // padding: 16px;
+  .admin-wrapper {
+    padding: 16px;
+  }
 
   .actions-row {
     margin-bottom: 16px;
@@ -16,6 +20,7 @@
     padding: 16px;
     border-radius: 8px;
   }
+
   .delete-action {
     color: red;
     cursor: pointer;

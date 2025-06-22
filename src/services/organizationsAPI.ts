@@ -20,7 +20,7 @@ export interface CreateOrganizationData {
   adminEmail: string
   adminPassword: string
   description?: string
-  type: string
+  type?: string
   // walletAddress?: string
   logo?: string
   website?: string

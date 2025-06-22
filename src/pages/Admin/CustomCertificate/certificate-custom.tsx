@@ -123,7 +123,7 @@ export default function CertificateManagement() {
       <div className="certificate-management__header">
         <div className="certificate-management__header-content">
           <div className="certificate-management__title-section">
-            <h1 className="certificate-management__title">Custom Certificate</h1>
+            <h1 className="certificate-management__title">Custom Certificate Templates</h1>
             <p className="certificate-management__subtitle">
               Create and manage certificate templates for your organization
             </p>

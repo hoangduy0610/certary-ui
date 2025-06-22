@@ -15,7 +15,7 @@ interface RegisterFormData {
   password: string
   firstName: string
   lastName: string
-  walletAddress: string
+  // walletAddress: string
 }
 
 const RegisterForm: React.FC = () => {
@@ -25,7 +25,7 @@ const RegisterForm: React.FC = () => {
     password: "",
     firstName: "",
     lastName: "",
-    walletAddress: "",
+    // walletAddress: "",
   })
 
   const [loading, setLoading] = useState(false)
@@ -58,7 +58,7 @@ const RegisterForm: React.FC = () => {
         password: "",
         firstName: "",
         lastName: "",
-        walletAddress: "",
+        // walletAddress: "",
       })
     } catch (err: any) {
       setError(err.message || "Registration failed")
@@ -155,7 +155,7 @@ const RegisterForm: React.FC = () => {
               />
             </div>
 
-            <div className="form-group">
+            {/* <div className="form-group">
               <label htmlFor="walletAddress">Wallet Address</label>
               <input
                 type="text"
@@ -178,7 +178,7 @@ const RegisterForm: React.FC = () => {
                   Connect with MetaMask
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             <div className="form-options">
               <label className="checkbox-container">

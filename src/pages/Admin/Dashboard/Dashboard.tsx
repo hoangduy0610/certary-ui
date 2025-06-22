@@ -1,42 +1,29 @@
 import {
-  Layout,
-  Menu,
-  Input,
-  Badge,
-  Avatar,
-  Button,
-  Row,
-  Col,
-  Card,
-} from "antd";
-import {
-  DashboardOutlined,
-  FileTextOutlined,
-  UserOutlined,
-  TeamOutlined,
-  SettingOutlined,
-  BellOutlined,
-  DownloadOutlined,
-  ReloadOutlined,
+  ReloadOutlined
 } from "@ant-design/icons";
-import "./Dashboard.scss";
+import {
+  Card,
+  Col,
+  Layout,
+  Row
+} from "antd";
 import AdminHeader from "../../../components/AdminHeader/adminHeader";
+import "./Dashboard.scss";
 
 const { Header, Sider, Content } = Layout;
 
 export default function Dashboard() {
   return (
-
-    <Layout>
+    <div className="dashboard-page">
       {/* Header */}
       <AdminHeader />
       {/* Dashboard Content */}
-      <Content className="admin-wrapper" style={{ margin: "24px 16px" }}>
+      <div className="admin-wrapper" style={{ margin: "24px 16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h1>Dashboard</h1>
-          <Button icon={<DownloadOutlined />} type="primary">
+          {/* <Button icon={<DownloadOutlined />} type="primary">
             Download Report
-          </Button>
+          </Button> */}
         </div>
 
         {/* Stats */}
@@ -69,7 +56,7 @@ export default function Dashboard() {
             </Card>
           </Col>
         </Row>
-      </Content>
-    </Layout>
+      </div>
+    </div>
   );
 }

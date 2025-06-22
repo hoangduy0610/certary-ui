@@ -2,8 +2,12 @@
   // padding: 16px;
   // max-width: 1400px;
   margin: 0 auto;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
   min-height: 100vh;
+
+  .admin-wrapper {
+    padding: 16px;
+  }
 
   .organizations-header {
     display: flex;

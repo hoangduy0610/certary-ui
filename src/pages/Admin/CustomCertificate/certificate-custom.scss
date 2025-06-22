@@ -1,6 +1,12 @@
 .certificate-management {
   // padding: 2rem;
 
+  .certificate-management__header,
+  .certificate-management__content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   &__header {
     border-bottom: 1px solid #e0e0e0;
     padding-bottom: 1rem;
@@ -11,6 +17,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+
     @media (min-width: 768px) {
       flex-direction: row;
       justify-content: space-between;
