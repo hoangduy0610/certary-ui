@@ -3,8 +3,8 @@ import {
   ApartmentOutlined,
   DashboardOutlined,
   IdcardOutlined,
-  UserOutlined,
-  BookOutlined,
+  TagOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { useState } from 'react';
@@ -64,9 +64,14 @@ const AdminLayout: React.FC = () => {
           )}
 
           {userInfo.role === 'admin' && (
-            <Menu.Item key="organizations" icon={<ApartmentOutlined />}>
-              <Link to="/admin/organizations">Organizations</Link>
-            </Menu.Item>
+            <>
+              <Menu.Item key="organizations" icon={<ApartmentOutlined />}>
+                <Link to="/admin/organizations">Organizations</Link>
+              </Menu.Item>
+              <Menu.Item key="forum-category" icon={<TagOutlined />}>
+                <Link to="/admin/forum-category">Forum Category</Link>
+              </Menu.Item>
+            </>
           )}
         </Menu>
       </Sider>

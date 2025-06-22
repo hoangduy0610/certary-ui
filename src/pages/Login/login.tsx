@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import "./login.scss"
-import { authAPI } from "../../services/authAPI"
+import { Form } from "antd"
 import { StorageKeys } from "../../common/StorageKeys"
-import { Button, Form } from "antd"
 import { useUserInfo } from "../../hooks/useUserInfo"
+import { authAPI } from "../../services/authAPI"
+import "./login.scss"
 
 interface LoginFormData {
   email: string

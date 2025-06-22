@@ -1,13 +1,10 @@
-import type React from "react"
 
-import { BrowserQRCodeReader } from "@zxing/browser"
 import { Button, Modal, Result, message } from "antd"
 import { ethers } from "ethers"
 import {
   Award,
   Building,
   Calendar,
-  Camera,
   CheckCircle,
   Copy,
   Hash,
@@ -15,19 +12,16 @@ import {
   Search,
   Shield,
   Sparkles,
-  Upload,
   User,
-  XCircle,
+  XCircle
 } from "lucide-react"
 import moment from "moment"
 import { useEffect, useRef, useState } from "react"
-import { QrReader } from "react-qr-reader"
 import { abi } from "../../common/NFTAbi"
 import Footer from "../../components/Footer/footer"
 import { Header } from "../../components/Header/Header"
 import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
 import "./verify-certificate.scss"
-
 export enum EnumNFTStatus {
   DRAFT,
   ISSUED,
@@ -82,31 +76,31 @@ export default function VerifyCertificate() {
 
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event?.target?.files;
-    const file = files ? files[0] : null;
-    if (!file) return;
+  // const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = event?.target?.files;
+  //   const file = files ? files[0] : null;
+  //   if (!file) return;
 
-    setError('');
-    const url = URL.createObjectURL(file);
+  //   setError('');
+  //   const url = URL.createObjectURL(file);
 
-    try {
-      const codeReader = new BrowserQRCodeReader();
-      const imageElement = document.createElement('img');
+  //   try {
+  //     const codeReader = new BrowserQRCodeReader();
+  //     const imageElement = document.createElement('img');
 
-      imageElement.src = url;
-      imageElement.onload = async () => {
-        try {
-          const decoded = await codeReader.decodeFromImageElement(imageElement);
-          console.log(decoded.getText());
-        } catch (err) {
-          setError('Could not decode QR code.');
-        }
-      };
-    } catch (err) {
-      setError('Failed to process image.');
-    }
-  }
+  //     imageElement.src = url;
+  //     imageElement.onload = async () => {
+  //       try {
+  //         const decoded = await codeReader.decodeFromImageElement(imageElement);
+  //         console.log(decoded.getText());
+  //       } catch (err) {
+  //         setError('Could not decode QR code.');
+  //       }
+  //     };
+  //   } catch (err) {
+  //     setError('Failed to process image.');
+  //   }
+  // }
 
   const verifyCertificate = async (initialCertificateId?: string) => {
     const certId = initialCertificateId || certificateId;
@@ -337,7 +331,7 @@ export default function VerifyCertificate() {
                     QR Code Scanner
                   </h3>
                   <div className="scanner-video">
-                    {isScanning &&
+                    {/* {isScanning &&
                       <QrReader
                         constraints={{ facingMode: "user" }}
                         onResult={(result, error) => {
@@ -345,7 +339,7 @@ export default function VerifyCertificate() {
                           console.log("QR Result:", result, "Error:", error);
                         }}
                       />
-                    }
+                    } */}
                     <div className="scanner-overlay">
                       <div className="corner top-left"></div>
                       <div className="corner top-right"></div>

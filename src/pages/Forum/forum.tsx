@@ -1,192 +1,69 @@
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Footer from "../../components/Footer/footer"
 import { Header } from "../../components/Header/Header"
+import forumAPI, { ForumCategory, ForumComment, ForumPost } from "../../services/forumAPI"
 import TopicDetail from "../ForumDetail/forum-detail"
 import "./forum.scss"
-
-interface Topic {
-    id: number
-    title: string
-    author: string
-    avatar: string
-    category: string
-    replies: number
-    views: number
-    lastActivity: string
-    isPinned?: boolean
-    tags: string[]
-    content: string
-    createdAt: string
-}
-
-interface Comment {
-    id: number
-    topicId: number
-    author: string
-    avatar: string
-    content: string
-    createdAt: string
-    likes: number
-}
+import moment from "moment"
+import { message } from "antd"
 
 export default function Forum() {
     const [currentView, setCurrentView] = useState<"forum" | "topic">("forum")
     const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
-    const [activeCategory, setActiveCategory] = useState("all")
+    const [categories, setCategories] = useState<ForumCategory[]>([])
+    const [activeCategory, setActiveCategory] = useState<ForumCategory>()
     const [searchQuery, setSearchQuery] = useState("")
     const [showNewTopicForm, setShowNewTopicForm] = useState(false)
+    const [forumTopics, setForumTopics] = useState<ForumPost[]>([])
     const [newTopic, setNewTopic] = useState({
         title: "",
-        category: "general",
-        content: "",
+        category: "",
         tags: "",
+        content: "",
     })
-    const [comments, setComments] = useState<Comment[]>([
-        {
-            id: 1,
-            topicId: 1,
-            author: "Alice Smith",
-            avatar: "AS",
-            content:
-                "You can verify certificates by checking the digital signature and comparing it with the issuer's public key. Make sure to use official verification tools.",
-            createdAt: "2024-01-15T11:15:00Z",
-            likes: 5,
-        },
-        {
-            id: 2,
-            topicId: 1,
-            author: "Bob Johnson",
-            avatar: "BJ",
-            content:
-                "I recommend using the official Certary verification portal. It's the most reliable way to ensure authenticity.",
-            createdAt: "2024-01-15T12:30:00Z",
-            likes: 3,
-        },
-        {
-            id: 3,
-            topicId: 1,
-            author: "Carol Davis",
-            avatar: "CD",
-            content:
-                "Also check the certificate metadata and ensure all required fields are properly filled. Invalid or missing information is often a red flag.",
-            createdAt: "2024-01-15T13:45:00Z",
-            likes: 7,
-        },
-    ])
-
-    const categories = [
-        { id: "all", name: "All Topics", count: 156 },
-        { id: "general", name: "General Discussion", count: 45 },
-        { id: "certificates", name: "Certificate Help", count: 38 },
-        { id: "technical", name: "Technical Support", count: 29 },
-        { id: "announcements", name: "Announcements", count: 12 },
-        { id: "feedback", name: "Feedback & Suggestions", count: 32 },
-    ]
-
-    const forumTopics: Topic[] = [
-        {
-            id: 1,
-            title: "How to verify certificate authenticity?",
-            author: "John Doe",
-            avatar: "JD",
-            category: "certificates",
-            replies: 12,
-            views: 245,
-            lastActivity: "2 hours ago",
-            isPinned: true,
-            tags: ["verification", "security"],
-            content:
-                "I'm having trouble verifying the authenticity of my certificates. Can someone guide me through the process? What are the best practices for certificate verification?",
-            createdAt: "2024-01-15T10:30:00Z",
-        },
-        {
-            id: 2,
-            title: "Welcome to Certary Community Forum!",
-            author: "Admin",
-            avatar: "AD",
-            category: "announcements",
-            replies: 28,
-            views: 892,
-            lastActivity: "1 day ago",
-            isPinned: true,
-            tags: ["welcome", "community"],
-            content:
-                "Welcome to our community forum! This is a place where you can ask questions, share knowledge, and connect with other users. Please read our community guidelines before posting.",
-            createdAt: "2024-01-10T09:00:00Z",
-        },
-        {
-            id: 3,
-            title: "Best practices for certificate management",
-            author: "Sarah Wilson",
-            avatar: "SW",
-            category: "general",
-            replies: 15,
-            views: 367,
-            lastActivity: "3 hours ago",
-            isPinned: false,
-            tags: ["best-practices", "management"],
-            content:
-                "What are the best practices for managing certificates in a large organization? I'm looking for tips on organization, storage, and renewal tracking.",
-            createdAt: "2024-01-12T14:20:00Z",
-        },
-        {
-            id: 4,
-            title: "Issue with certificate upload - getting error 500",
-            author: "Mike Johnson",
-            avatar: "MJ",
-            category: "technical",
-            replies: 8,
-            views: 156,
-            lastActivity: "5 hours ago",
-            isPinned: false,
-            tags: ["bug", "upload", "error"],
-            content:
-                "I'm getting a 500 error when trying to upload my certificate. The file size is under the limit and the format is correct. Has anyone experienced this issue?",
-            createdAt: "2024-01-14T08:15:00Z",
-        },
-        {
-            id: 5,
-            title: "Feature request: Dark mode support",
-            author: "Emily Chen",
-            avatar: "EC",
-            category: "feedback",
-            replies: 23,
-            views: 445,
-            lastActivity: "1 day ago",
-            isPinned: false,
-            tags: ["feature-request", "ui"],
-            content:
-                "It would be great to have dark mode support for the application. Many users prefer dark themes, especially when working late hours.",
-            createdAt: "2024-01-13T16:45:00Z",
-        },
-        {
-            id: 6,
-            title: "How to export certificates in bulk?",
-            author: "David Brown",
-            avatar: "DB",
-            category: "certificates",
-            replies: 6,
-            views: 189,
-            lastActivity: "2 days ago",
-            isPinned: false,
-            tags: ["export", "bulk"],
-            content:
-                "Is there a way to export multiple certificates at once? I need to download all my certificates for backup purposes.",
-            createdAt: "2024-01-12T11:30:00Z",
-        },
-    ]
+    const [messageApi, contextHolder] = message.useMessage()
+    const [page, setPage] = useState(1)
 
     const filteredTopics = forumTopics.filter((topic) => {
-        const matchesCategory = activeCategory === "all" || topic.category === activeCategory
+        const matchesCategory = !activeCategory?.id || topic.categoryId === activeCategory?.id
         const matchesSearch =
             topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            topic.author.toLowerCase().includes(searchQuery.toLowerCase())
+            topic?.author?.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            topic?.author?.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            topic.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            topic.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
         return matchesCategory && matchesSearch
     })
 
+    const pagedTopics = filteredTopics.slice((page - 1) * 5, page * 5)
+
     const selectedTopic = forumTopics.find((topic) => topic.id === selectedTopicId)
-    const topicComments = comments.filter((comment) => comment.topicId === selectedTopicId)
+    const topicComments = selectedTopic?.forumComments || []
+
+    const fetchForumCategories = async () => {
+        try {
+            const res = await forumAPI.getAllCategories()
+            setCategories(res)
+        } catch (error) {
+            console.error("Error fetching forum categories:", error)
+        }
+    }
+
+    useEffect(() => {
+        fetchForumCategories()
+    }, [])
+
+    useEffect(() => {
+        if (categories.length > 0) {
+            setActiveCategory(categories[0])
+        }
+    }, [categories])
+
+    useEffect(() => {
+        const post = activeCategory?.forumPosts || []
+        setForumTopics(post)
+    }, [activeCategory])
 
     const handleTopicClick = (topicId: number) => {
         setSelectedTopicId(topicId)
@@ -198,10 +75,21 @@ export default function Forum() {
         setSelectedTopicId(null)
     }
 
-    const handleSubmitTopic = (e: React.FormEvent) => {
+    const handleSubmitTopic = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log("New topic:", newTopic)
-        setNewTopic({ title: "", category: "general", content: "", tags: "" })
+        const data = {
+            title: newTopic.title,
+            content: newTopic.content,
+            tags: newTopic.tags.split(",").map((tag) => tag.trim()),
+            categoryId: parseInt(newTopic.category) || activeCategory?.id || 0,
+        }
+        try {
+            const response = await forumAPI.createPost(data)
+            fetchForumCategories() // Refresh categories to get the new post
+            setNewTopic({ title: "", category: "", tags: "", content: "" })
+        } catch (error) {
+            console.error("Error creating topic:", error)
+        }
         setShowNewTopicForm(false)
     }
 
@@ -210,8 +98,23 @@ export default function Forum() {
         setNewTopic((prev) => ({ ...prev, [name]: value }))
     }
 
-    const handleAddComment = (newComment: Comment) => {
-        setComments([...comments, newComment])
+    const handleAddComment = async (newComment: Partial<ForumComment>) => {
+        try {
+            await forumAPI.createComment(selectedTopicId!, newComment.content || "")
+            // Refresh comments after adding a new comment
+            fetchForumCategories()
+        } catch (error) {
+            console.error("Error adding comment:", error)
+        }
+    }
+
+    const handleLikePost = async (postId: number) => {
+        try {
+            await forumAPI.toggleInteraction(postId)
+            fetchForumCategories()
+        } catch (error) {
+            console.error("Error liking post:", error)
+        }
     }
 
     const renderForumView = () => (
@@ -233,11 +136,11 @@ export default function Forum() {
                                 {categories.map((category) => (
                                     <button
                                         key={category.id}
-                                        className={`categoryItem ${activeCategory === category.id ? "active" : ""}`}
-                                        onClick={() => setActiveCategory(category.id)}
+                                        className={`categoryItem ${activeCategory?.id === category.id ? "active" : ""}`}
+                                        onClick={() => setActiveCategory(category)}
                                     >
                                         <span className="categoryName">{category.name}</span>
-                                        <span className="categoryCount">{category.count}</span>
+                                        <span className="categoryCount">{category.forumPosts.length}</span>
                                     </button>
                                 ))}
                             </div>
@@ -247,21 +150,21 @@ export default function Forum() {
                             <h3>Forum Stats</h3>
                             <div className="statsList">
                                 <div className="statItem">
-                                    <span className="statLabel">Total Topics</span>
-                                    <span className="statValue">156</span>
+                                    <span className="statLabel">Total Categories</span>
+                                    <span className="statValue">{categories.length}</span>
                                 </div>
                                 <div className="statItem">
                                     <span className="statLabel">Total Posts</span>
-                                    <span className="statValue">1,247</span>
+                                    <span className="statValue">{categories.reduce((a, category) => a + category.forumPosts.length, 0)}</span>
                                 </div>
-                                <div className="statItem">
+                                {/* <div className="statItem">
                                     <span className="statLabel">Active Members</span>
                                     <span className="statValue">342</span>
                                 </div>
                                 <div className="statItem">
                                     <span className="statLabel">Online Now</span>
                                     <span className="statValue">28</span>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -331,18 +234,19 @@ export default function Forum() {
                                             />
                                         </div>
                                         <div className="formGroup">
-                                            <label htmlFor="category">Category *</label>
+                                            <label htmlFor="categoryId">Category *</label>
                                             <select
-                                                id="category"
-                                                name="category"
+                                                id="categoryId"
+                                                name="categoryId"
                                                 value={newTopic.category}
                                                 onChange={handleInputChange}
                                                 required
                                             >
-                                                <option value="general">General Discussion</option>
-                                                <option value="certificates">Certificate Help</option>
-                                                <option value="technical">Technical Support</option>
-                                                <option value="feedback">Feedback & Suggestions</option>
+                                                {categories.map((category) => (
+                                                    <option key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -417,15 +321,46 @@ export default function Forum() {
                         )}
 
                         <div className="topicsList">
-                            {filteredTopics.map((topic) => (
-                                <div key={topic.id} className={`topicCard ${topic.isPinned ? "pinned" : ""}`}>
+                            {!pagedTopics.length && (
+                                <div className="noTopics">
+                                    <p>No topics found. Try changing the filters or search criteria.</p>
+                                </div>
+                            )}
+                            {pagedTopics.map((topic) => (
+                                <div key={topic.id} className={`topicCard ${topic?.isPinned ? "pinned" : ""}`}>
                                     <div className="topicHeader">
-                                        <div className="topicMeta">
-                                            <div className="authorInfo">
-                                                <div className="authorAvatar">{topic.avatar}</div>
-                                                <div className="authorDetails">
-                                                    <span className="authorName">{topic.author}</span>
-                                                    <span className="topicTime">{topic.lastActivity}</span>
+                                        <div className="topicMeta" style={{ flex: 1 }}>
+                                            <div className="authorInfo" style={{ flex: 1 }}>
+                                                <div className="authorAvatar">
+                                                    {
+                                                        topic.author?.avatar
+                                                            ? (
+                                                                <img className="avatar-circle" src={topic.author.avatar} alt={`${topic.author.firstName} ${topic.author.lastName}`} />
+                                                            )
+                                                            : (topic.author.firstName?.substring(0, 1) || "U")
+                                                    }
+                                                </div>
+                                                <div className="authorDetails" style={{ flex: 1 }}>
+                                                    <span className="authorName">{topic.author.firstName} {topic.author.lastName}</span>
+                                                    <span className="topicTime">{moment(topic.updatedAt).format("DD-MM-YYYY")}</span>
+                                                </div>
+                                                <div>
+                                                    <button className="likeButton" onClick={() => handleLikePost(topic.id)}>
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            viewBox="0 0 24 24"
+                                                            fill={topic.forumInteractions.some((interaction) => interaction.userId === topic.author.id) ? "currentColor" : "none"}
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                                                        </svg>
+                                                        <span>{topic.forumInteractions.length}</span>
+                                                    </button>
                                                 </div>
                                             </div>
                                             {topic.isPinned && (
@@ -454,7 +389,7 @@ export default function Forum() {
                                             {topic.title}
                                         </h3>
                                         <div className="topicTags">
-                                            {topic.tags.map((tag) => (
+                                            {topic?.tags?.map((tag) => (
                                                 <span key={tag} className="topicTag">
                                                     {tag}
                                                 </span>
@@ -477,9 +412,9 @@ export default function Forum() {
                                             >
                                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                                             </svg>
-                                            <span>{topic.replies}</span>
+                                            <span>{topic.forumComments.length}</span>
                                         </div>
-                                        <div className="statItem">
+                                        {/* <div className="statItem">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 width="16"
@@ -494,15 +429,28 @@ export default function Forum() {
                                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                                 <circle cx="12" cy="12" r="3"></circle>
                                             </svg>
-                                            <span>{topic.views}</span>
-                                        </div>
+                                            <span>{topic.forumInteractions.length}</span>
+                                        </div> */}
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         <div className="pagination">
-                            <button className="paginationBtn" disabled>
+                            <button
+                                className="paginationBtn"
+                                onClick={() => {
+                                    if (page > 1) {
+                                        setPage(page - 1)
+                                    } else {
+                                        messageApi.open({
+                                            type: 'info',
+                                            content: 'You are already on the first page.',
+                                        })
+                                    }
+                                }}
+                                disabled={page <= 1}
+                            >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="16"
@@ -519,11 +467,30 @@ export default function Forum() {
                                 Previous
                             </button>
                             <div className="pageNumbers">
-                                <button className="pageBtn active">1</button>
-                                <button className="pageBtn">2</button>
-                                <button className="pageBtn">3</button>
+                                {Array.from({ length: Math.ceil(filteredTopics.length / 5) }, (_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        className={`pageBtn ${page === index + 1 ? "active" : ""}`}
+                                        onClick={() => setPage(index + 1)}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
                             </div>
-                            <button className="paginationBtn">
+                            <button
+                                className="paginationBtn"
+                                onClick={() => {
+                                    if (page < Math.ceil(filteredTopics.length / 5)) {
+                                        setPage(page + 1)
+                                    } else {
+                                        messageApi.open({
+                                            type: 'info',
+                                            content: 'You are already on the last page.',
+                                        })
+                                    }
+                                }}
+                                disabled={page >= Math.ceil(filteredTopics.length / 5)}
+                            >
                                 Next
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -558,6 +525,7 @@ export default function Forum() {
                     comments={topicComments}
                     onBackToForum={handleBackToForum}
                     onAddComment={handleAddComment}
+                    onLikePost={handleLikePost}
                 />
             )}
 

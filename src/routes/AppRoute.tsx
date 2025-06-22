@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Certificates from '../pages/Admin/Certificates/Certificates';
 import CertificatesCustom from '../pages/Admin/CustomCertificate/certificate-custom';
 import Dashboard from '../pages/Admin/Dashboard/Dashboard';
+import ForumCategoryPage from '../pages/Admin/ForumCategory/ForumCategory';
 import AdminLayout from '../pages/Admin/Layout/AdminLayout';
 import Organizations from '../pages/Admin/Organizations/Organizations';
 import Users from '../pages/Admin/Users/Users';
@@ -47,6 +48,7 @@ const AppRoute = () => {
         <Route path="certificates" element={<Certificates />} />
         <Route path="organizations" element={<Organizations />} />
         <Route path="custom-certificates" element={<CertificatesCustom />} />
+        <Route path="forum-category" element={<ForumCategoryPage />} />
       </Route>
 
       {/* Fallback Route */}

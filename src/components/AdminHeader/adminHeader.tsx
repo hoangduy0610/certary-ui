@@ -2,6 +2,7 @@ import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Dropdown, Input } from "antd";
 import React from "react";
 import { logout } from "../../utils/auth";
+import { useUserInfo } from "../../hooks/useUserInfo";
 
 const { Search } = Input;
 
@@ -17,6 +18,8 @@ const AdminHeader: React.FC = () => {
       }
     ]
   }
+
+  const { userInfo } = useUserInfo();
 
   return (
     <div
@@ -38,7 +41,11 @@ const AdminHeader: React.FC = () => {
 
         <Dropdown menu={menu} trigger={['click']}>
           <span style={{ cursor: "pointer" }}>
-            <Avatar icon={<UserOutlined />} />
+            {userInfo?.avatar ? (
+              <Avatar src={userInfo.avatar} />
+            ) : (
+              <Avatar icon={<UserOutlined />} />
+            )}
           </span>
         </Dropdown>
       </div>

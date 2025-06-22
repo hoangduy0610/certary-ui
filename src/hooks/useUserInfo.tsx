@@ -16,6 +16,7 @@ export interface UserInfo {
     organization?: Organization;
     walletAddress?: string;
     isFirstLogin?: boolean;
+    avatar?: string;
 }
 
 interface UserInfoContextType {

@@ -4,6 +4,7 @@ import MainApiRequest from "./MainApiRequest"
 export interface User {
     id: number
     email: string
+    avatar?: string
     firstName?: string
     lastName?: string
     walletAddress?: string
