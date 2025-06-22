@@ -1,36 +1,24 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
-// Public Pages
-import Home from '../pages/Home/home';
-import MyCertificates from '../pages/MyCertificates/my-certificates';
-import Contact from '../pages/Contact/contact';
-import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
-import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
-
-// Admin Pages
-import AdminLayout from '../pages/Admin/Layout/AdminLayout';
-import Dashboard from '../pages/Admin/Dashboard/Dashboard';
-import Users from '../pages/Admin/Users/Users';
 import Certificates from '../pages/Admin/Certificates/Certificates';
-import CertificateTypes from '../pages/Admin/CertificateType/CertificateType';
-import Organizations from '../pages/Admin/Organizations/Organizations';
-
-// Custom Certificate Pages
 import CertificatesCustom from '../pages/Admin/CustomCertificate/certificate-custom';
-import CertificateEditor from '../pages/Admin/CustomCertificate/certificate-editor';
-import CertificatePreview from '../pages/Admin/CustomCertificate/certificate-preview';
-
-import Forum from '../pages/Forum/forum';
-import Login from '../pages/Login/login';
-import Register from '../pages/Register/register';
-import CertificateLayoutEditor from '../pages/Admin/CertificateLayoutEditor/CertificateLayoutEditor';
-import WelcomePage from '../pages/Welcome/welcome';
-import OnboardingPage from '../pages/Welcome/Onboarding';
-import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
+import Dashboard from '../pages/Admin/Dashboard/Dashboard';
+import AdminLayout from '../pages/Admin/Layout/AdminLayout';
+import Organizations from '../pages/Admin/Organizations/Organizations';
+import Users from '../pages/Admin/Users/Users';
+import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
 import ClaimCertificate from '../pages/ClaimCertificate/claim-certificate';
+import Contact from '../pages/Contact/contact';
+import Forum from '../pages/Forum/forum';
+import Home from '../pages/Home/home';
 import IssuerRegister from '../pages/IssuerRegister/issuer-register';
-
+import Login from '../pages/Login/login';
+import MyCertificates from '../pages/MyCertificates/my-certificates';
+import Register from '../pages/Register/register';
+import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
+import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
+import OnboardingPage from '../pages/Welcome/Onboarding';
+import WelcomePage from '../pages/Welcome/welcome';
 
 const AppRoute = () => {
   return (
@@ -57,24 +45,8 @@ const AppRoute = () => {
         <Route index element={<Dashboard />} />
         <Route path="users" element={<Users />} />
         <Route path="certificates" element={<Certificates />} />
-        <Route path="certificates/verify" element={<VerifyCertificate />} />
-        {/* <Route path="certificate-types" element={<CertificateTypes />} /> */}
         <Route path="organizations" element={<Organizations />} />
-        <Route path="layout" element={<CertificateLayoutEditor />} />
-
-        {/* Custom Certificate Routes */}
         <Route path="custom-certificates" element={<CertificatesCustom />} />
-        {/* <Route path="custom-certificates/editor/:id" element={<CertificateEditor />} /> */}
-        {/* <Route
-          path="custom-certificates/preview/:id"
-          element={
-            <CertificatePreview
-              template={{} as any} // TODO: Replace with actual template data or fetch logic and type
-              onBack={() => { }} // Replace with actual back handler
-              onEdit={() => { }} // Replace with actual edit handler
-            />
-          }
-        /> */}
       </Route>
 
       {/* Fallback Route */}
