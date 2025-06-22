@@ -1,7 +1,9 @@
+"use client"
+
 import moment from "moment"
 import type React from "react"
 import { useState } from "react"
-import { ForumComment, ForumPost } from "../../services/forumAPI"
+import type { ForumComment, ForumPost } from "../../services/forumAPI"
 import "./forum-detail.scss"
 
 interface TopicDetailProps {
@@ -10,9 +12,17 @@ interface TopicDetailProps {
   onBackToForum: () => void
   onAddComment: (comment: Partial<ForumComment>) => void
   onLikePost: (postId: number) => void
+  onDeleteComment: (commentId: number) => void
 }
 
-export default function TopicDetail({ topic, comments, onBackToForum, onAddComment, onLikePost }: TopicDetailProps) {
+export default function TopicDetail({
+  topic,
+  comments,
+  onBackToForum,
+  onAddComment,
+  onLikePost,
+  onDeleteComment,
+}: TopicDetailProps) {
   const [newComment, setNewComment] = useState("")
 
   if (!topic) {
@@ -56,16 +66,20 @@ export default function TopicDetail({ topic, comments, onBackToForum, onAddComme
           <div className="topicDetailHeader">
             <div className="authorInfo" style={{ flex: 1 }}>
               <div className="authorAvatar">
-                {
-                  topic.author?.avatar
-                    ? (
-                      <img className="avatar-circle" src={topic.author.avatar} alt={`${topic.author.firstName} ${topic.author.lastName}`} />
-                    )
-                    : (topic.author.firstName?.substring(0, 1) || "U")
-                }
+                {topic.author?.avatar ? (
+                  <img
+                    className="avatar-circle"
+                    src={topic.author.avatar || "/placeholder.svg"}
+                    alt={`${topic.author.firstName} ${topic.author.lastName}`}
+                  />
+                ) : (
+                  topic.author.firstName?.substring(0, 1) || "U"
+                )}
               </div>
               <div className="authorDetails" style={{ flex: 1 }}>
-                <span className="authorName">{topic.author.firstName} {topic.author.lastName}</span>
+                <span className="authorName">
+                  {topic.author.firstName} {topic.author.lastName}
+                </span>
                 <span className="topicTime">Posted on {moment(topic.createdAt).format("DD-MM-YYYY")}</span>
               </div>
               <div>
@@ -75,7 +89,11 @@ export default function TopicDetail({ topic, comments, onBackToForum, onAddComme
                     width="16"
                     height="16"
                     viewBox="0 0 24 24"
-                    fill={topic.forumInteractions.some((interaction) => interaction.userId === topic.author.id) ? "currentColor" : "none"}
+                    fill={
+                      topic.forumInteractions.some((interaction) => interaction.userId === topic.author.id)
+                        ? "currentColor"
+                        : "none"
+                    }
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
@@ -119,6 +137,20 @@ export default function TopicDetail({ topic, comments, onBackToForum, onAddComme
 
           <div className="topicDetailContent">
             <p>{topic.content}</p>
+
+            {/* Display images if any */}
+            {topic.images && topic.images.length > 0 && (
+              <div className="topicImages">
+                {topic.images.map((image, index) => (
+                  <img
+                    key={index}
+                    src={image || "/placeholder.svg"}
+                    alt={`Topic image ${index + 1}`}
+                    className="topicImage"
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="topicDetailStats">
@@ -138,23 +170,6 @@ export default function TopicDetail({ topic, comments, onBackToForum, onAddComme
               </svg>
               <span>{topic.forumComments.length} replies</span>
             </div>
-            {/* <div className="statItem">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <span>{topic.forumInteractions.length} loves</span>
-            </div> */}
           </div>
         </div>
 
@@ -203,21 +218,44 @@ export default function TopicDetail({ topic, comments, onBackToForum, onAddComme
                 <div className="commentHeader">
                   <div className="authorInfo">
                     <div className="authorAvatar">
-                      {
-                        comment.user?.avatar
-                          ? (
-                            <img className="avatar-circle" src={comment.user.avatar} alt={`${comment.user.firstName} ${comment.user.lastName}`} />
-                          )
-                          : (comment.user.firstName?.substring(0, 1) || "U")
-                      }
+                      {comment.user?.avatar ? (
+                        <img
+                          className="avatar-circle"
+                          src={comment.user.avatar || "/placeholder.svg"}
+                          alt={`${comment.user.firstName} ${comment.user.lastName}`}
+                        />
+                      ) : (
+                        comment.user.firstName?.substring(0, 1) || "U"
+                      )}
                     </div>
                     <div className="authorDetails">
-                      <span className="authorName">{comment.user.firstName} {comment.user.lastName}</span>
+                      <span className="authorName">
+                        {comment.user.firstName} {comment.user.lastName}
+                      </span>
                       <span className="commentTime">{moment(comment.createdAt).format("DD-MM-YYYY")}</span>
                     </div>
                   </div>
                   <div className="commentActions">
-                    {/*  */}
+                    <button
+                      className="actionButton deleteButton"
+                      onClick={() => onDeleteComment(comment.id)}
+                      title="Delete comment"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
                   </div>
                 </div>
                 <div className="commentContent">

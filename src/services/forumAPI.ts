@@ -37,6 +37,7 @@ export interface ForumInteraction {
 }
 
 export interface ForumComment extends ForumInteraction {
+    author: any;
     content: string;
 }
 

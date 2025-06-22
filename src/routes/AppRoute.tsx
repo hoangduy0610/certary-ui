@@ -14,12 +14,15 @@ import Forum from '../pages/Forum/forum';
 import Home from '../pages/Home/home';
 import IssuerRegister from '../pages/IssuerRegister/issuer-register';
 import Login from '../pages/Login/login';
+import ForgotPassword from '../pages/ForgotPassword/ForgotPasswordForm';
 import MyCertificates from '../pages/MyCertificates/my-certificates';
 import Register from '../pages/Register/register';
 import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
 import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
 import OnboardingPage from '../pages/Welcome/Onboarding';
 import WelcomePage from '../pages/Welcome/welcome';
+import MyProfile from '../pages/MyProfile/my-profile';
+import ResetPassword from '../pages/ForgotPassword/ResetPasswordForm';
 
 const AppRoute = () => {
   return (
@@ -28,11 +31,14 @@ const AppRoute = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/issuer-register" element={<IssuerRegister />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/" element={<Home />} />
       <Route path="/my-certificates" element={<MyCertificates />} />
       <Route path="/claim-certificate" element={<ClaimCertificate />} />
       <Route path="/certificate-details/:id" element={<CertificatesDetails />} />
       <Route path="/forum" element={<Forum />} />
+      <Route path="/my-profile" element={<MyProfile />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/verify-certificate" element={<VerifyCertificate />} />
       <Route path="/welcome" element={<WelcomePage />} />

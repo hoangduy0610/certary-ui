@@ -1,0 +1,282 @@
+.my-profile-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+  .profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+
+    .profile-header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+      }
+
+      p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        padding-bottom: 1rem;
+        margin: 0 auto;
+      }
+    }
+
+    .header-shape {
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      clip-path: ellipse(50% 50% at 50% 100%);
+      z-index: 1;
+    }
+  }
+
+  .profile-container {
+    max-width: 1200px;
+    margin: -50px auto 4rem;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 5;
+  }
+
+  .profile-avatar-card {
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+    overflow: hidden;
+
+    .avatar-section {
+      text-align: center;
+      padding: 1rem 0;
+
+      .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+
+        .profile-avatar {
+          border: 4px solid #fff;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-upload-btn {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          background: #667eea;
+          border-color: #667eea;
+          color: white;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+
+          &:hover {
+            background: #5a67d8;
+            border-color: #5a67d8;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      .user-basic-info {
+        h2 {
+          margin-bottom: 0.5rem;
+          color: #2d3748;
+          font-weight: 600;
+        }
+
+        .user-role {
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: 1rem;
+          background: rgba(102, 126, 234, 0.1);
+          display: inline-block;
+        }
+
+        .user-email,
+        .user-organization {
+          color: #718096;
+          margin-bottom: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+
+    .profile-stats {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+
+      .stat-item {
+        .stat-value {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #667eea;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          color: #718096;
+        }
+      }
+    }
+  }
+
+  .profile-form-card {
+    border-radius: 1rem;
+    
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: none;
+
+    .ant-card-head {
+        
+      border-bottom: 1px solid #e2e8f0;
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+
+      .ant-card-head-title {
+        font-weight: 600;
+        color: #2d3748;
+      }
+    }
+
+    .ant-form-item-label > label {
+      font-weight: 500;
+      color: #000000;
+    }
+
+    .ant-input,
+    .ant-select-selector {
+      border-radius: 0.5rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s;
+
+      &:hover {
+        border-color: #667eea;
+      }
+
+      &:focus,
+      &.ant-input-focused,
+      &.ant-select-focused .ant-select-selector {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+    }
+
+    .ant-btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .ant-btn {
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .profile-header {
+      padding: 2rem 1rem;
+
+      .profile-header-content {
+        h1 {
+          font-size: 2rem;
+        }
+
+        p {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .profile-container {
+      margin: -30px auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .profile-avatar-card {
+      margin-bottom: 1rem;
+    }
+
+    .profile-stats {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  // Dark mode support
+  @media (prefers-color-scheme: dark) {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+
+    .profile-avatar-card,
+    .profile-form-card {
+      background: #ffffff;
+      color: #e2e8f0;
+
+      .ant-card-head {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        border-bottom-color: #4a5568;
+
+        .ant-card-head-title {
+          color: #e2e8f0;
+        }
+      }
+    }
+
+    .user-basic-info h2 {
+      color: #e2e8f0;
+    }
+
+    .ant-form-item-label > label {
+      color: #cbd5e0;
+    }
+  }
+}
+
+// Ant Design customizations
+.ant-upload-list-item {
+  display: none !important;
+}
+
+.ant-form-item-has-error .ant-input,
+.ant-form-item-has-error .ant-select-selector {
+  border-color: #e53e3e;
+}
+
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}

@@ -23,6 +23,7 @@ export const Header = ({ active }: HeaderProps) => {
         { name: "Home", path: "/", active: active === "home" },
         { name: "My Certificate", path: "/my-certificates", active: active === "my-certificates" },
         { name: "Forum", path: "/forum", active: active === "forum" },
+        { name: "My Profile", path: "/my-profile", active: active === "my-profile" },
         { name: "Verification", path: "/verify-certificate", active: active === "verify-certificate" },
         { name: "Contact", path: "/contact", active: active === "contact" },
         { ...getSpecialRoute(userInfo) }

@@ -102,7 +102,7 @@ const LoginForm: React.FC = () => {
               <span className="checkmark"></span>
               Remember me
             </label>
-            <a href="#forgot" className="forgot-link">
+            <a href="/forgot-password" className="forgot-link">
               Forgot password?
             </a>
           </div>
