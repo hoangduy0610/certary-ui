@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState, useEffect } from "react"
 import "./ResetPasswordForm.scss"
@@ -10,7 +8,7 @@ interface ResetPasswordFormProps {
 }
 
 const ResetPasswordForm = () => {
-  // Get token from URL parameters
+  // Get token from URL
   const urlParams = new URLSearchParams(window.location.search)
   const token = urlParams.get("token") || ""
   const [formData, setFormData] = useState({
@@ -42,11 +40,11 @@ const ResetPasswordForm = () => {
         console.log("Token is valid:", token)
       } else {
         setTokenValid(false)
-        setError("Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn")
+        setError("The reset link is invalid or has expired")
       }
     } catch (err: any) {
       setTokenValid(false)
-      setError("Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn")
+      setError("The reset link is invalid or has expired")
     } finally {
       setValidating(false)
     }
@@ -63,22 +61,22 @@ const ResetPasswordForm = () => {
 
   const validateForm = () => {
     if (!formData.password.trim()) {
-      setError("Vui lòng nhập mật khẩu mới")
+      setError("Please enter a new password")
       return false
     }
 
     if (formData.password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự")
+      setError("Password must be at least 6 characters long")
       return false
     }
 
     if (!formData.confirmPassword.trim()) {
-      setError("Vui lòng xác nhận mật khẩu")
+      setError("Please confirm your password")
       return false
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp")
+      setError("Passwords do not match")
       return false
     }
 
@@ -104,7 +102,7 @@ const ResetPasswordForm = () => {
         window.location.href = "/login"
       }, 3000)
     } catch (err: any) {
-      setError("Có lỗi xảy ra khi đặt lại mật khẩu")
+      setError("An error occurred while resetting your password")
     } finally {
       setLoading(false)
     }
@@ -125,8 +123,8 @@ const ResetPasswordForm = () => {
         <div className="reset-password-card">
           <div className="loading-content">
             <div className="loading-spinner large"></div>
-            <h2>Đang xác thực...</h2>
-            <p>Vui lòng chờ trong giây lát</p>
+            <h2>Validating...</h2>
+            <p>Please wait a moment</p>
           </div>
         </div>
       </div>
@@ -146,15 +144,15 @@ const ResetPasswordForm = () => {
                 <line x1="9" y1="9" x2="15" y2="15" strokeWidth="2" />
               </svg>
             </div>
-            <h2>Link đã hết hạn</h2>
-            <p>Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu link mới.</p>
+            <h2>Link has expired</h2>
+            <p>This password reset link is invalid or has expired. Please request a new one.</p>
 
             <div className="action-buttons">
               <button className="primary-button" onClick={handleRequestNewLink}>
-                Yêu cầu link mới
+                Request new link
               </button>
               <button className="secondary-button" onClick={handleBackToLogin}>
-                Quay lại đăng nhập
+                Back to login
               </button>
             </div>
           </div>
@@ -171,13 +169,16 @@ const ResetPasswordForm = () => {
           <div className="success-content">
             <div className="success-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 12l6 6L20 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M4 12l6 6L20 6"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
-            <h2>Đặt lại mật khẩu thành công!</h2>
-            <p>
-              Mật khẩu của bạn đã được cập nhật thành công. Bạn sẽ được chuyển hướng đến trang đăng nhập trong giây lát.
-            </p>
+            <h2>Password reset successful!</h2>
+            <p>Your password has been updated successfully. You will be redirected to the login page shortly.</p>
 
             <div className="countdown">
               <div className="countdown-circle">
@@ -186,7 +187,7 @@ const ResetPasswordForm = () => {
             </div>
 
             <button className="login-button" onClick={handleBackToLogin}>
-              Đăng nhập ngay
+              Go to login
             </button>
           </div>
         </div>
@@ -207,35 +208,35 @@ const ResetPasswordForm = () => {
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" strokeWidth="2" />
               </svg>
             </div>
-            <h1>Đặt lại mật khẩu</h1>
-            <p>Nhập mật khẩu mới cho tài khoản của bạn</p>
+            <h1>Reset Password</h1>
+            <p>Enter a new password for your account</p>
           </div>
 
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="password">Mật khẩu mới</label>
+            <label htmlFor="password">New password</label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)"
+              placeholder="Enter new password (at least 6 characters)"
               required
               autoFocus
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
+            <label htmlFor="confirmPassword">Confirm password</label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="Nhập lại mật khẩu mới"
+              placeholder="Confirm new password"
               required
             />
           </div>
@@ -244,16 +245,16 @@ const ResetPasswordForm = () => {
             {loading ? (
               <>
                 <span className="loading-spinner"></span>
-                Đang cập nhật...
+                Updating...
               </>
             ) : (
-              "Cập nhật mật khẩu"
+              "Reset password"
             )}
           </button>
 
           <div className="form-footer">
             <button type="button" className="back-link" onClick={handleBackToLogin}>
-              ← Quay lại đăng nhập
+              ← Back to login
             </button>
           </div>
         </form>
