@@ -1,16 +1,19 @@
 "use client"
 
+import { Button, Card, message } from "antd"
+import moment from "moment"
 import type React from "react"
 import { useEffect, useState } from "react"
 import Footer from "../../components/Footer/footer"
 import { Header } from "../../components/Header/Header"
+import { useUserInfo } from "../../hooks/useUserInfo"
+import { fileApi } from "../../services/fileApi"
 import forumAPI, { type ForumCategory, type ForumComment, type ForumPost } from "../../services/forumAPI"
 import TopicDetail from "../ForumDetail/forum-detail"
 import "./forum.scss"
-import moment from "moment"
-import { message } from "antd"
 
 export default function Forum() {
+  const { userInfo } = useUserInfo();
   const [currentView, setCurrentView] = useState<"forum" | "topic">("forum")
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null)
   const [categories, setCategories] = useState<ForumCategory[]>([])
@@ -23,6 +26,7 @@ export default function Forum() {
     category: "",
     tags: "",
     content: "",
+    images: [] as string[],
   })
   const [messageApi, contextHolder] = message.useMessage()
   const [page, setPage] = useState(1)
@@ -32,9 +36,9 @@ export default function Forum() {
     category: "",
     tags: "",
     content: "",
-    images: [] as File[],
+    images: [] as string[],
   })
-  const [selectedImages, setSelectedImages] = useState<File[]>([])
+  const [selectedImages, setSelectedImages] = useState<string[]>([])
 
   const filteredTopics = forumTopics.filter((topic) => {
     const matchesCategory = !activeCategory?.id || topic.categoryId === activeCategory?.id
@@ -45,7 +49,12 @@ export default function Forum() {
       topic.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       topic.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     return matchesCategory && matchesSearch
-  })
+  }).sort((a, b) => {
+    // Sort by pinned topics first, then by created date
+    if (a.isPinned && !b.isPinned) return -1
+    if (!a.isPinned && b.isPinned) return 1
+    return moment(b.createdAt).diff(moment(a.createdAt));
+  });
 
   const pagedTopics = filteredTopics.slice((page - 1) * 5, page * 5)
 
@@ -86,24 +95,21 @@ export default function Forum() {
     setSelectedTopicId(null)
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    if (editingTopicId) {
-      setEditingTopic((prev) => ({ ...prev, images: [...prev.images, ...files] }))
-    } else {
-      setSelectedImages((prev) => [...prev, ...files])
-    }
+    const fileUrls = await Promise.all(
+      files.map(async (file) => {
+        if (file instanceof File) {
+          return await fileApi.uploadFile(file);
+        }
+        return "";
+      })
+    ).then(urls => urls.filter(Boolean));
+    setSelectedImages((prev) => [...prev, ...fileUrls])
   }
 
   const removeImage = (index: number) => {
-    if (editingTopicId) {
-      setEditingTopic((prev) => ({
-        ...prev,
-        images: prev.images.filter((_, i) => i !== index),
-      }))
-    } else {
-      setSelectedImages((prev) => prev.filter((_, i) => i !== index))
-    }
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleEditTopic = (topic: ForumPost) => {
@@ -113,8 +119,9 @@ export default function Forum() {
       category: topic.categoryId.toString(),
       tags: topic.tags?.join(", ") || "",
       content: topic.content,
-      images: [],
+      images: topic.images || [],
     })
+    setSelectedImages(topic.images || [])
     setShowNewTopicForm(true)
   }
 
@@ -161,39 +168,29 @@ export default function Forum() {
 
     try {
       if (editingTopicId) {
-        // For editing - use FormData to handle both text and files
-        const formData = new FormData()
-        formData.append("title", editingTopic.title)
-        formData.append("content", editingTopic.content)
-        formData.append("tags", editingTopic.tags)
-        formData.append("categoryId", editingTopic.category || activeCategory?.id?.toString() || "0")
+        const data = {
+          title: editingTopic.title,
+          content: editingTopic.content,
+          tags: editingTopic.tags.split(",").map((tag) => tag.trim()),
+          categoryId: parseInt(editingTopic.category) || activeCategory?.id || 0,
+          images: selectedImages,
+        }
 
-        // Add images if any
-        editingTopic.images.forEach((image) => {
-          formData.append("images", image)
-        })
-
-        // Cast FormData to any to work with existing API
-        await forumAPI.updatePost(editingTopicId, formData as any)
+        await forumAPI.updatePost(editingTopicId, data)
         messageApi.open({
           type: "success",
           content: "Topic updated successfully.",
         })
       } else {
-        // For creating - use FormData to handle both text and files
-        const formData = new FormData()
-        formData.append("title", newTopic.title)
-        formData.append("content", newTopic.content)
-        formData.append("tags", newTopic.tags)
-        formData.append("categoryId", newTopic.category || activeCategory?.id?.toString() || "0")
+        const data = {
+          title: newTopic.title,
+          content: newTopic.content,
+          tags: newTopic.tags.split(",").map((tag) => tag.trim()),
+          categoryId: parseInt(newTopic.category) || activeCategory?.id || 0,
+          images: selectedImages,
+        }
 
-        // Add images if any
-        selectedImages.forEach((image) => {
-          formData.append("images", image)
-        })
-
-        // Cast FormData to any to work with existing API
-        await forumAPI.createPost(formData as any)
+        await forumAPI.createPost(data)
         messageApi.open({
           type: "success",
           content: "Topic created successfully.",
@@ -201,7 +198,7 @@ export default function Forum() {
       }
 
       fetchForumCategories()
-      setNewTopic({ title: "", category: "", tags: "", content: "" })
+      setNewTopic({ title: "", category: "", tags: "", content: "", images: [] })
       setEditingTopic({ title: "", category: "", tags: "", content: "", images: [] })
       setSelectedImages([])
       setEditingTopicId(null)
@@ -363,7 +360,6 @@ export default function Forum() {
                         onChange={handleInputChange}
                         required
                       >
-                        <option value="">Select a category</option>
                         {categories.map((category) => (
                           <option key={category.id} value={category.id}>
                             {category.name}
@@ -412,22 +408,31 @@ export default function Forum() {
                     />
                     <small>You can upload multiple images (JPG, PNG, GIF)</small>
 
-                    {(editingTopicId ? editingTopic.images : selectedImages).length > 0 && (
-                      <div className="imagePreview">
-                        {(editingTopicId ? editingTopic.images : selectedImages).map((image, index) => (
-                          <div key={index} className="imagePreviewItem">
-                            <img
-                              src={URL.createObjectURL(image) || "/placeholder.svg"}
-                              alt={`Preview ${index + 1}`}
-                              className="previewImage"
-                            />
-                            <button type="button" onClick={() => removeImage(index)} className="removeImageButton">
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {
+                      selectedImages.length > 0 && (
+                        <div className="imagePreview d-flex">
+                          {
+                            selectedImages.map((image, index) => (
+                              <Card
+                                key={index}
+                                hoverable
+                                style={{ margin: '10px' }}
+                                cover={<img alt={`Preview ${index + 1}`} src={image || "/placeholder.svg"} className="previewImage" />}
+                              >
+                                <Button
+                                  type="primary"
+                                  danger
+                                  onClick={() => removeImage(index)}
+                                  className="removeImageButton"
+                                >
+                                  Remove
+                                </Button>
+                              </Card>
+                            ))
+                          }
+                        </div>
+                      )
+                    }
                   </div>
 
                   <div className="formActions">
@@ -532,48 +537,52 @@ export default function Forum() {
                             <span>{topic.forumInteractions.length}</span>
                           </button>
                         </div>
-                        <div className="topicActions">
-                          <button
-                            className="actionButton editButton"
-                            onClick={() => handleEditTopic(topic)}
-                            title="Edit topic"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+
+                        {
+                          topic.author.id === userInfo.id &&
+                          <div className="topicActions">
+                            <button
+                              className="actionButton editButton"
+                              onClick={() => handleEditTopic(topic)}
+                              title="Edit topic"
                             >
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                          </button>
-                          <button
-                            className="actionButton deleteButton"
-                            onClick={() => handleDeleteTopic(topic.id)}
-                            title="Delete topic"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                            </button>
+                            <button
+                              className="actionButton deleteButton"
+                              onClick={() => handleDeleteTopic(topic.id)}
+                              title="Delete topic"
                             >
-                              <polyline points="3 6 5 6 21 6"></polyline>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                          </button>
-                        </div>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        }
                       </div>
                       {topic.isPinned && (
                         <div className="pinnedBadge">
@@ -600,6 +609,17 @@ export default function Forum() {
                     <h3 className="topicTitle" onClick={() => handleTopicClick(topic.id)}>
                       {topic.title}
                     </h3>
+                    {/* If has image, get first image as thumbnail */}
+                    {topic.images && topic.images.length > 0 && (
+                      <div className="topicImage">
+                        <img
+                          src={topic.images[0] || "/placeholder.svg"}
+                          alt={topic.title}
+                          className="thumbnail"
+                          onClick={() => handleTopicClick(topic.id)}
+                        />
+                      </div>
+                    )}
                     <div className="topicTags">
                       {topic?.tags?.map((tag) => (
                         <span key={tag} className="topicTag">

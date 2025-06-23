@@ -1,21 +1,23 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Form, Input, Button, Upload, Avatar, Card, Row, Col, Divider, message, Select, DatePicker, Space } from "antd"
 import {
-    UserOutlined,
-    EditOutlined,
-    SaveOutlined,
     CameraOutlined,
-    MailOutlined,
+    EditOutlined,
     HomeOutlined,
     IdcardOutlined,
+    MailOutlined,
+    SaveOutlined,
+    UserOutlined,
 } from "@ant-design/icons"
 import type { UploadProps } from "antd"
-import { useUserInfo } from "../../hooks/useUserInfo"
-import "./my-profile.scss"
+import { Avatar, Button, Card, Col, Divider, Form, Input, Row, Select, Space, Upload, message } from "antd"
 import moment from "moment"
+import { useEffect, useState } from "react"
 import { Header } from "../../components/Header/Header"
+import { useUserInfo } from "../../hooks/useUserInfo"
+import { fileApi } from "../../services/fileApi"
+import { UserAPI } from "../../services/userAPI"
+import "./my-profile.scss"
 
 const { Option } = Select
 
@@ -44,19 +46,16 @@ export default function MyProfile() {
     const handleSave = async (values: any) => {
         setLoading(true)
         try {
-            // Simulate API call to update user info
-            const updatedUserInfo = {
-                ...userInfo,
+            const dataDto = {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 email: values.email,
-                walletAddress: values.walletAddress,
+                // walletAddress: values.walletAddress,
                 avatar: avatarUrl,
             }
 
-            setUserInfo(updatedUserInfo)
-            localStorage.setItem("USER_INFO", JSON.stringify(updatedUserInfo))
-
+            await UserAPI.updateProfile(dataDto)
+            await getUserInfo();
             message.success("Profile updated successfully!")
             setIsEditing(false)
         } catch (error) {
@@ -67,7 +66,11 @@ export default function MyProfile() {
     }
 
     const handleCancel = () => {
-        form.resetFields()
+        form.setFieldsValue({
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName,
+            email: userInfo.email,
+        })
         setIsEditing(false)
         setAvatarUrl(userInfo.avatar || "")
     }
@@ -90,8 +93,9 @@ export default function MyProfile() {
 
             // Convert to base64 for preview
             const reader = new FileReader()
-            reader.onload = () => {
-                setAvatarUrl(reader.result as string)
+            reader.onload = async () => {
+                const urlImg = await fileApi.uploadFile(file)
+                setAvatarUrl(urlImg)
             }
             reader.readAsDataURL(file)
 
@@ -241,10 +245,10 @@ export default function MyProfile() {
                                 </Form.Item>
 
                                 <Form.Item label="Wallet Address" name="walletAddress">
-                                    <Input prefix={<IdcardOutlined />} placeholder="Your wallet address" disabled={!isEditing} />
+                                    <Input prefix={<IdcardOutlined />} placeholder="Your wallet address" disabled readOnly />
                                 </Form.Item>
 
-                                <Row gutter={16}>
+                                {/* <Row gutter={16}>
                                     <Col xs={24} sm={12}>
                                         <Form.Item label="Role" name="role">
                                             <Select disabled placeholder="Select role">
@@ -260,7 +264,7 @@ export default function MyProfile() {
                                             <DatePicker disabled style={{ width: "100%" }} format="YYYY-MM-DD" />
                                         </Form.Item>
                                     </Col>
-                                </Row>
+                                </Row> */}
 
                                 {userInfo.organization && (
                                     <Form.Item label="Organization" name="organizationName">

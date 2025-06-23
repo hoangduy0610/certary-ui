@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import "./ForgotPasswordForm.scss"
+import { authAPI } from "../../services/authAPI"
 
 const ForgotPasswordForm: React.FC = () => {
   const [email, setEmail] = useState("")
@@ -36,10 +37,8 @@ const ForgotPasswordForm: React.FC = () => {
     setLoading(true)
     setError("")
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      console.log("Forgot password request for:", email)
+      await authAPI.sendEmailReset(email)
       setSuccess(true)
     } catch (err: any) {
       setError("Có lỗi xảy ra. Vui lòng thử lại.")
@@ -57,9 +56,9 @@ const ForgotPasswordForm: React.FC = () => {
 
     setLoading(true)
     try {
-      // Simulate resend API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Resend email to:", email)
+      await authAPI.sendEmailReset(email)
+      setSuccess(true)
+      setError("")
     } catch (err: any) {
       setError("Không thể gửi lại email")
     } finally {
@@ -82,7 +81,7 @@ const ForgotPasswordForm: React.FC = () => {
             <div className="email-display">{email}</div>
             <p className="instruction">
               Vui lòng kiểm tra hộp thư đến (và cả thư mục spam) để tìm email từ chúng tôi. Link sẽ hết hạn sau{" "}
-              <strong>15 phút</strong>.
+              <strong>30 phút</strong>.
             </p>
 
             <div className="action-buttons">

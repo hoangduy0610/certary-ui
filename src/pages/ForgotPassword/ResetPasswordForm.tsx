@@ -3,12 +3,16 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import "./ResetPasswordForm.scss"
+import { authAPI } from "../../services/authAPI"
 
 interface ResetPasswordFormProps {
   token?: string
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ token }) => {
+const ResetPasswordForm = () => {
+  // Get token from URL parameters
+  const urlParams = new URLSearchParams(window.location.search)
+  const token = urlParams.get("token") || ""
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
@@ -30,13 +34,9 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ token }) => {
       return
     }
 
-    // Simulate token validation
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Mock validation - you can change this for testing
-      const isValidToken = token.length > 10 // Simple mock validation
-
+      const validation = await authAPI.verifyResetToken(token)
+      const isValidToken = !!validation?.id || false
       if (isValidToken) {
         setTokenValid(true)
         console.log("Token is valid:", token)
@@ -96,10 +96,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ token }) => {
     setError("")
 
     try {
-      // Simulate reset password API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      console.log("Password reset successful for token:", token)
-      console.log("New password:", formData.password)
+      await authAPI.resetPassword(token, formData.password)
       setSuccess(true)
 
       // Redirect to login after 3 seconds

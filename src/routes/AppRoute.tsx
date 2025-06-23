@@ -4,25 +4,26 @@ import Certificates from '../pages/Admin/Certificates/Certificates';
 import CertificatesCustom from '../pages/Admin/CustomCertificate/certificate-custom';
 import Dashboard from '../pages/Admin/Dashboard/Dashboard';
 import ForumCategoryPage from '../pages/Admin/ForumCategory/ForumCategory';
+import ForumPostPage from '../pages/Admin/ForumPost/ForumPost';
 import AdminLayout from '../pages/Admin/Layout/AdminLayout';
 import Organizations from '../pages/Admin/Organizations/Organizations';
 import Users from '../pages/Admin/Users/Users';
 import CertificatesDetails from '../pages/CertificateDetails/certificate-details';
 import ClaimCertificate from '../pages/ClaimCertificate/claim-certificate';
 import Contact from '../pages/Contact/contact';
+import ForgotPassword from '../pages/ForgotPassword/ForgotPasswordForm';
+import ResetPassword from '../pages/ForgotPassword/ResetPasswordForm';
 import Forum from '../pages/Forum/forum';
 import Home from '../pages/Home/home';
 import IssuerRegister from '../pages/IssuerRegister/issuer-register';
 import Login from '../pages/Login/login';
-import ForgotPassword from '../pages/ForgotPassword/ForgotPasswordForm';
 import MyCertificates from '../pages/MyCertificates/my-certificates';
+import MyProfile from '../pages/MyProfile/my-profile';
 import Register from '../pages/Register/register';
 import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
 import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
 import OnboardingPage from '../pages/Welcome/Onboarding';
 import WelcomePage from '../pages/Welcome/welcome';
-import MyProfile from '../pages/MyProfile/my-profile';
-import ResetPassword from '../pages/ForgotPassword/ResetPasswordForm';
 
 const AppRoute = () => {
   return (
@@ -44,7 +45,6 @@ const AppRoute = () => {
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/connect-wallet" element={<ConnectWalletPage />} />
-      <Route path="/" element={<WelcomePage />} />
 
 
       {/* Admin Routes */}
@@ -55,6 +55,7 @@ const AppRoute = () => {
         <Route path="organizations" element={<Organizations />} />
         <Route path="custom-certificates" element={<CertificatesCustom />} />
         <Route path="forum-category" element={<ForumCategoryPage />} />
+        <Route path="forum-post" element={<ForumPostPage />} />
       </Route>
 
       {/* Fallback Route */}

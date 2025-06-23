@@ -60,6 +60,16 @@ const ForumCategoryPage: React.FC = () => {
     setForumCategoryFormVisible(true);
   }
 
+  const handleDeleteForumCategory = async (id: number) => {
+    try {
+      await forumAPI.deleteCategory(id);
+      messageApi.success('ForumCategory deleted successfully');
+      fetchForumCategories(); // Refresh the forumCategory list
+    } catch (error) {
+      messageApi.error('Error deleting forumCategory');
+    }
+  };
+
   const columns = [
     {
       title: 'Icon',
@@ -90,7 +100,9 @@ const ForumCategoryPage: React.FC = () => {
           }}>
             <EditOutlined />
           </Button>
-          <Button variant="outlined" className="ms-2" danger onClick={() => { }}>
+          <Button variant="outlined" className="ms-2" danger onClick={() => {
+            handleDeleteForumCategory(record.id);
+          }}>
             <DeleteOutlined />
           </Button>
         </Space>

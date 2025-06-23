@@ -16,7 +16,8 @@ export interface UpdateUserDto {
     firstName?: string
     lastName?: string
     // walletAddress?: string
-    role: User['role']
+    avatar?: string
+    role?: User['role']
 }
 
 export interface UpdateWalletDto {

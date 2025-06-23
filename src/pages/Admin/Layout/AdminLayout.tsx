@@ -3,6 +3,7 @@ import {
   ApartmentOutlined,
   DashboardOutlined,
   IdcardOutlined,
+  ReadOutlined,
   TagOutlined,
   UserOutlined
 } from '@ant-design/icons';
@@ -70,6 +71,9 @@ const AdminLayout: React.FC = () => {
               </Menu.Item>
               <Menu.Item key="forum-category" icon={<TagOutlined />}>
                 <Link to="/admin/forum-category">Forum Category</Link>
+              </Menu.Item>
+              <Menu.Item key="forum-post" icon={<ReadOutlined />}>
+                <Link to="/admin/forum-post">Forum Post</Link>
               </Menu.Item>
             </>
           )}

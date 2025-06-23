@@ -1,0 +1,36 @@
+.forum-post-page {
+  // padding: 16px;
+
+  .admin-wrapper {
+    padding: 16px;
+  }
+
+  // Hàng chứa nút hành động
+  .forum-post-actions {
+    margin-bottom: 16px;
+
+    .ant-space {
+      gap: 12px !important;
+    }
+
+    .ant-btn {
+      border-radius: 6px;
+    }
+  }
+
+  // Bảng người dùng
+  .forum-post-table {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+
+    .delete-action {
+      color: red;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

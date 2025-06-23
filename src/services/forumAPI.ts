@@ -156,6 +156,15 @@ export const forumAPI = {
             console.error("Delete forum comment error:", error)
             throw new Error(error.response?.data?.message || error.message)
         }
+    },
+    async togglePinPost(postId: number): Promise<ForumPost> {
+        try {
+            const response = await MainApiRequest.post(`/forum/posts/${postId}/pin`)
+            return response.data
+        } catch (error: any) {
+            console.error("Toggle pin forum post error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
     }
 }
 
