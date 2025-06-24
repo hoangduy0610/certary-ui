@@ -32,7 +32,7 @@ export default function ClaimCertificate() {
     try {
       setLoading(true)
       // Fetch all certificates and filter for issued status
-      const allCertificates = await CertificateAPI.getAll()
+      const allCertificates = await CertificateAPI.getMyCertificates()
       const issued = allCertificates.filter((cert) => cert.isClaimable && !cert.revoked && moment(cert.expiredAt).isAfter(moment()) && cert.status === EnumCertificateStatus.ISSUED)
       setIssuedCertificates(issued)
     } catch (error) {
@@ -66,9 +66,9 @@ export default function ClaimCertificate() {
     fetchIssuedCertificates()
   }, [])
 
-  useEffect(() => {
-    getUserInfo()
-  }, [navigate, getUserInfo])
+  // useEffect(() => {
+  //   getUserInfo()
+  // }, [navigate, getUserInfo])
 
   // Function to generate harmonious gradient colors for issued certificates
   const generateGradient = () => {

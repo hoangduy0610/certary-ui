@@ -22,6 +22,7 @@ import Footer from "../../components/Footer/footer"
 import { Header } from "../../components/Header/Header"
 import { Certificate, CertificateAPI, EnumCertificateStatus } from "../../services/certificateAPI"
 import "./verify-certificate.scss"
+import { CheckCircleOutlined } from "@ant-design/icons"
 export enum EnumNFTStatus {
   DRAFT,
   ISSUED,
@@ -474,12 +475,12 @@ export default function VerifyCertificate() {
                     </Button>
                     <Button
                       variant="outlined"
-                      color="orange"
+                      color="primary"
                       onClick={() => verifyNft(certificate.certificateId)}
                       size="large"
                       disabled={!provider}
                     >
-                      <img src="https://etherscan.io/images/svg/brands/metamask.svg" alt="Metamask Icon" height={30} />
+                      <CheckCircleOutlined size={30} />
                       Verify NFT
                     </Button>
                   </div>

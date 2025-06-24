@@ -1,5 +1,5 @@
 import { MonitorOutlined } from "@ant-design/icons"
-import { Button, Modal, Tag, message } from "antd"
+import { Button, Modal, Tag, Timeline, message } from "antd"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
@@ -120,7 +120,7 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
 
         <div className="modalContent">
           <div className="certificatePreview">
-            <div className="certificateFrame" style={{ background: gradient }}>
+            <div className="certificateFrame" style={{ flex: 1, background: gradient }}>
               <div className="certificateContent">
                 <div className="certificateLogo">
                   <div className="logoPlaceholder">
@@ -283,6 +283,14 @@ export default function CertificateDetail({ onClose }: CertificateDetailProps) {
                         <span className="value">40 Hours</span>
                       </div> */}
                     </div>
+                  </div>
+                  <div className="section">
+                    <h3>Certificate Logs</h3>
+                    <Timeline
+                      items={cert?.logs?.map((log) => ({
+                        children: (<p><strong>[{log.event}] - </strong>{log.message}</p>),
+                      })) || []}
+                    />
                   </div>
                   {/* <div className="section">
                     <h3>Verification</h3>

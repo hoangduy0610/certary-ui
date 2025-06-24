@@ -20,8 +20,8 @@ export default function MyCertificates() {
 
   const fetchCertificates = async () => {
     // Simulating an API call to fetch certificates
-    const data = await CertificateAPI.getAll();
-    setCertificates(data.filter(cert => cert?.owner?.id === userInfo?.id));
+    const data = await CertificateAPI.getMyCertificates();
+    setCertificates(data);
   }
 
   useEffect(() => {

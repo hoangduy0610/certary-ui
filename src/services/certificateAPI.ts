@@ -13,6 +13,25 @@ export enum EnumCertificateStatus {
     EXPIRED = 'expired',
 }
 
+export enum EnumNFTEvent {
+    CertificateCreated = 'CertificateCreated',
+    CertificateClaimed = 'CertificateClaimed',
+    CertificateRevoked = 'CertificateRevoked',
+    CertificateUpdated = 'CertificateUpdated',
+    ExpectedClaimerUpdated = 'ExpectedClaimerUpdated',
+    CertificateTransferred = 'CertificateTransferred',
+}
+
+export interface NFTEvent {
+    id: number
+    event: EnumNFTEvent;
+    message: string;
+    certificateId: number;
+    certificate: Certificate;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface Certificate {
     id: number
     title: string
@@ -31,6 +50,8 @@ export interface Certificate {
     certificateType: CertificateType
     isClaimable?: boolean
     revoked?: boolean
+    ownerId?: number
+    logs?: NFTEvent[]
 }
 
 export interface CreateCertificateDto {
@@ -60,6 +81,16 @@ export const CertificateAPI = {
             return response.data
         } catch (error: any) {
             console.error("Get all certificates error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
+    },
+
+    async getMyCertificates(): Promise<Certificate[]> {
+        try {
+            const response = await MainApiRequest.get(`/certificates/my-certificates`)
+            return response.data
+        } catch (error: any) {
+            console.error("Get my certificates error:", error)
             throw new Error(error.response?.data?.message || error.message)
         }
     },
