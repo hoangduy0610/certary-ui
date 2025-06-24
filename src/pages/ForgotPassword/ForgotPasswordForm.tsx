@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import "./ForgotPasswordForm.scss"
@@ -25,12 +23,12 @@ const ForgotPasswordForm: React.FC = () => {
     e.preventDefault()
 
     if (!email.trim()) {
-      setError("Vui lòng nhập địa chỉ email")
+      setError("Please enter your email address")
       return
     }
 
     if (!validateEmail(email)) {
-      setError("Địa chỉ email không hợp lệ")
+      setError("Invalid email address")
       return
     }
 
@@ -41,7 +39,7 @@ const ForgotPasswordForm: React.FC = () => {
       await authAPI.sendEmailReset(email)
       setSuccess(true)
     } catch (err: any) {
-      setError("Có lỗi xảy ra. Vui lòng thử lại.")
+      setError("An error occurred. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -60,7 +58,7 @@ const ForgotPasswordForm: React.FC = () => {
       setSuccess(true)
       setError("")
     } catch (err: any) {
-      setError("Không thể gửi lại email")
+      setError("Unable to resend email")
     } finally {
       setLoading(false)
     }
@@ -76,20 +74,20 @@ const ForgotPasswordForm: React.FC = () => {
                 <path d="M4 12l6 6L20 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h2>Email đã được gửi!</h2>
-            <p>Chúng tôi đã gửi link đặt lại mật khẩu đến địa chỉ email:</p>
+            <h2>Email Sent!</h2>
+            <p>We have sent a password reset link to:</p>
             <div className="email-display">{email}</div>
             <p className="instruction">
-              Vui lòng kiểm tra hộp thư đến (và cả thư mục spam) để tìm email từ chúng tôi. Link sẽ hết hạn sau{" "}
-              <strong>30 phút</strong>.
+              Please check your inbox (and spam folder) for our email. The link will expire in{" "}
+              <strong>30 minutes</strong>.
             </p>
 
             <div className="action-buttons">
               <button className="resend-button" onClick={handleResendEmail} disabled={loading}>
-                {loading ? "Đang gửi..." : "Gửi lại email"}
+                {loading ? "Sending..." : "Resend email"}
               </button>
               <button className="back-button" onClick={handleBackToLogin}>
-                Quay lại đăng nhập
+                Back to login
               </button>
             </div>
           </div>
@@ -108,14 +106,14 @@ const ForgotPasswordForm: React.FC = () => {
                 <path d="M19 12H5M12 19l-7-7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h1>Quên mật khẩu?</h1>
-            <p>Nhập địa chỉ email của bạn và chúng tôi sẽ gửi link đặt lại mật khẩu</p>
+            <h1>Forgot password?</h1>
+            <p>Enter your email address and we'll send you a reset link</p>
           </div>
 
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="email">Địa chỉ email</label>
+            <label htmlFor="email">Email address</label>
             <input
               type="email"
               id="email"
@@ -132,18 +130,18 @@ const ForgotPasswordForm: React.FC = () => {
             {loading ? (
               <>
                 <span className="loading-spinner"></span>
-                Đang gửi...
+                Sending...
               </>
             ) : (
-              "Gửi link đặt lại mật khẩu"
+              "Send reset link"
             )}
           </button>
 
           <div className="form-footer">
             <p>
-              Nhớ mật khẩu rồi?{" "}
+              Remember your password?{" "}
               <button type="button" className="login-link" onClick={handleBackToLogin}>
-                Quay lại đăng nhập
+                Back to login
               </button>
             </p>
           </div>
