@@ -24,6 +24,7 @@ import VerifyCertificate from '../pages/VerifyCertificate/verify-certificate';
 import ConnectWalletPage from '../pages/Welcome/ConnectWallet';
 import OnboardingPage from '../pages/Welcome/Onboarding';
 import WelcomePage from '../pages/Welcome/welcome';
+import ConfirmInvite from '../pages/ConfirmInvite';
 
 const AppRoute = () => {
   return (
@@ -45,6 +46,7 @@ const AppRoute = () => {
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/connect-wallet" element={<ConnectWalletPage />} />
+      <Route path="/confirm-invite" element={<ConfirmInvite />} />
 
 
       {/* Admin Routes */}

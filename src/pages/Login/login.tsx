@@ -46,6 +46,12 @@ const LoginForm: React.FC = () => {
       localStorage.setItem(StorageKeys.USER_INFO, JSON.stringify(response.info || {}))
       console.log("Login successful:", response)
       getUserInfo()
+      const redirectPath = localStorage.getItem(StorageKeys.REDIRECT_AFTER_LOGIN)
+      if (redirectPath) {
+        localStorage.removeItem(StorageKeys.REDIRECT_AFTER_LOGIN)
+        window.location.href = redirectPath || "/"
+        return;
+      }
       // Redirect to Welcome page
       if (response.isFirstLogin) {
         navigate("/welcome")

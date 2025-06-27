@@ -57,7 +57,12 @@ export const UserInfoProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useUserInfo = () => {
+export const useUserInfo = ({ redirectAfterLogin }: { redirectAfterLogin?: string } = {}) => {
+    if (redirectAfterLogin) {
+        console.log("Setting redirect after login:", redirectAfterLogin);
+        localStorage.setItem(StorageKeys.REDIRECT_AFTER_LOGIN, redirectAfterLogin);
+    }
+
     const context = React.useContext(UserInfoContext);
     if (!context) {
         throw new Error("useUserInfo must be used within a UserInfoProvider");

@@ -39,9 +39,13 @@ const AdminLayout: React.FC = () => {
           <Menu.Item key="dashboard" icon={<DashboardOutlined />}>
             <Link to="/admin">Dashboard</Link>
           </Menu.Item>
-          <Menu.Item key="users" icon={<UserOutlined />}>
-            <Link to="/admin/users">Users</Link>
-          </Menu.Item>
+          {
+            userInfo?.role === 'admin' ||
+            userInfo?.role === 'org_manager' && (
+              <Menu.Item key="users" icon={<UserOutlined />}>
+                <Link to="/admin/users">Users</Link>
+              </Menu.Item>
+            )}
 
           {userInfo?.organization?.type === "issuer" && (
             <>

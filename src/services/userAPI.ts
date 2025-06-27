@@ -108,5 +108,15 @@ export const UserAPI = {
             console.error("Remove from organization error:", error)
             throw new Error(error.response?.data?.message || error.message)
         }
+    },
+
+    async delete(id: number): Promise<any> {
+        try {
+            const response = await MainApiRequest.delete(`/user/${id}`)
+            return response.data
+        } catch (error: any) {
+            console.error("Delete user error:", error)
+            throw new Error(error.response?.data?.message || error.message)
+        }
     }
 }

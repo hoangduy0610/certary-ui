@@ -204,6 +204,26 @@ export const organizationsAPI = {
       throw new Error(error.response?.data?.message || error.message)
     }
   },
+
+  async inviteUser(email: string): Promise<any> {
+    try {
+      const response = await MainApiRequest.post(`/organizations/invite`, { email })
+      return response.data
+    } catch (error: any) {
+      console.error("Invite user error:", error)
+      throw new Error(error.response?.data?.message || error.message)
+    }
+  },
+
+  async confirmInvite(invitationId: string): Promise<any> {
+    try {
+      const response = await MainApiRequest.post(`/organizations/accept-invite/${invitationId}`)
+      return response.data
+    } catch (error: any) {
+      console.error("Confirm invite error:", error)
+      throw new Error(error.response?.data?.message || error.message)
+    }
+  },
 }
 
 // Export default

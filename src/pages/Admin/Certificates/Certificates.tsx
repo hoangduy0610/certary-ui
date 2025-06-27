@@ -15,6 +15,7 @@ import { useUserInfo } from '../../../hooks/useUserInfo';
 
 const CertificatesPage: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [searchText, setSearchText] = useState('');
   const [formLoading, setFormLoading] = useState(false);
   const [certificateFormVisible, setCertificateFormVisible] = useState(false);
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
@@ -25,6 +26,12 @@ const CertificatesPage: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const { userInfo } = useUserInfo();
   const navigate = useNavigate();
+
+  const filteredCertificates = data.filter(cert => {
+    return cert.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      cert.recipientEmail.toLowerCase().includes(searchText.toLowerCase()) ||
+      cert.certificateId?.toLowerCase().includes(searchText.toLowerCase());
+  });
 
   const fetchCertificates = async () => {
     const response = await CertificateAPI.getAll();
@@ -297,6 +304,12 @@ const CertificatesPage: React.FC = () => {
           <Row justify="space-between" className="actions-row">
             <Col>
               <Space>
+                <Input
+                  placeholder="Search certificates..."
+                  onChange={(e) => setSearchText(e.target.value)}
+                  allowClear
+                  style={{ width: 300 }}
+                />
                 {/* <Button icon={<FilterOutlined />}>Filter</Button>
                 <Button icon={<ExportOutlined />}>Export</Button> */}
               </Space>
@@ -316,7 +329,7 @@ const CertificatesPage: React.FC = () => {
             rowKey="id"
             // rowSelection={{ type: 'radio', ...rowSelection }}
             columns={columns}
-            dataSource={data}
+            dataSource={filteredCertificates}
             className="certificates-table"
           />
 
