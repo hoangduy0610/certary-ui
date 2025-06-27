@@ -125,7 +125,8 @@ export default function ClaimCertificate() {
     }
 
     const result = await contract?.claimCertificate(certificateId);
-    if (!result) {
+    const approveReceipt = await result.wait();
+    if (!approveReceipt || approveReceipt === 0) {
       messageApi.error("Failed to claim certificate. Please try again.")
       return
     }
