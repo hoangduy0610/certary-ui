@@ -222,6 +222,19 @@ export default function MyCertificates() {
                       backgroundColor: mapBackgroundColorStatus((!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : EnumCertificateStatus.EXPIRED),
                     }}>{(!cert.expiredAt || moment(cert.expiredAt).isAfter(moment())) ? cert.status : EnumCertificateStatus.EXPIRED}</span>
                   </div>
+                  {
+                    cert.status === EnumCertificateStatus.ISSUED &&
+                    <div className="certificateDetail">
+                      <span className="detailLabel">Claimable:</span>
+                      <span className="status-valid" style={{
+                        backgroundColor: (cert.isClaimable && !cert.revoked && moment(cert.expiredAt).isAfter(moment()) && cert.isNFTReady) ? "#4ade80" : "#f87171",
+                      }}>{
+                          cert.isClaimable && !cert.revoked && moment(cert.expiredAt).isAfter(moment()) && cert.isNFTReady
+                            ? "Yes"
+                            : "Not yet"
+                        }</span>
+                    </div>
+                  }
                   <div className="certificateActions">
                     <button className="btnLink" onClick={() => navigate(`/certificate-details/${cert.id}`)}>
                       <svg

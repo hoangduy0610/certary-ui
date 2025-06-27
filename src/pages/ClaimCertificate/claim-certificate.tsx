@@ -33,7 +33,7 @@ export default function ClaimCertificate() {
       setLoading(true)
       // Fetch all certificates and filter for issued status
       const allCertificates = await CertificateAPI.getMyCertificates()
-      const issued = allCertificates.filter((cert) => cert.isClaimable && !cert.revoked && moment(cert.expiredAt).isAfter(moment()) && cert.status === EnumCertificateStatus.ISSUED)
+      const issued = allCertificates.filter((cert) => cert.isClaimable && !cert.revoked && moment(cert.expiredAt).isAfter(moment()) && cert.status === EnumCertificateStatus.ISSUED && cert.isNFTReady)
       setIssuedCertificates(issued)
     } catch (error) {
       console.error("Error fetching issued certificates:", error)

@@ -52,6 +52,7 @@ export interface Certificate {
     revoked?: boolean
     ownerId?: number
     logs?: NFTEvent[]
+    isNFTReady?: boolean
 }
 
 export interface CreateCertificateDto {
