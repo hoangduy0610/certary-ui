@@ -40,8 +40,8 @@ const AdminLayout: React.FC = () => {
             <Link to="/admin">Dashboard</Link>
           </Menu.Item>
           {
-            userInfo?.role === 'admin' ||
-            userInfo?.role === 'org_manager' && (
+            (userInfo?.role === 'admin' ||
+              userInfo?.role === 'org_manager') && (
               <Menu.Item key="users" icon={<UserOutlined />}>
                 <Link to="/admin/users">Users</Link>
               </Menu.Item>
